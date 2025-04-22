@@ -1,0 +1,157 @@
+<?php
+
+namespace elitedrive\Models;
+
+use Exception;
+use PDO;
+use elitedrive\Core\DbConnect;
+use elitedrive\Entities\Reservation;
+
+class ReservationModel extends DbConnect
+{
+    // Afficher toutes les réservations avec les informations des utilisateurs et des véhicules
+    public function displayAll()
+    {
+        try {
+            $this->request = $this->connection->query(
+                "SELECT r.*, u.nom, u.prenom, u.email, u.ville, u.numero_telephone, 
+                 v.nom AS vehicule_nom, v.annee, v.description, 
+                  m.nom AS modele_nom, ma.nom AS marque_nom, ca.nom AS categorie_nom
+                FROM reservation r
+            INNER JOIN utilisateur u ON r.id_utilisateur = u.id_utilisateur 
+            INNER JOIN vehicule v ON r.id_vehicule = v.id_vehicule
+            INNER JOIN modele m ON v.id_modele = m.id_modele
+        INNER JOIN marque ma ON v.id_marque = ma.id_marque 
+        INNER JOIN categorie ca ON v.id_categorie = ca.id_categorie
+            "
+            );
+            return $this->request->fetchAll(PDO::FETCH_OBJ);
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+
+    // Afficher une réservation par son ID
+    public function displayOne($id_reservation)
+    {
+        try {
+            $this->request = $this->connection->prepare(
+                "SELECT r.*, u.nom, u.prenom, u.email, u.ville, u.numero_telephone, 
+                        v.nom AS vehicule_nom, v.couleur, v.annee, v.description 
+                 FROM reservation r
+                 INNER JOIN utilisateur u ON r.id_utilisateur = u.id_utilisateur
+                 INNER JOIN vehicule v ON r.id_vehicule = v.id_vehicule
+                 WHERE r.id_reservation = :id_reservation"
+            );
+            $this->request->bindValue(':id_reservation', $id_reservation, PDO::PARAM_INT);
+            $this->request->execute();
+            return $this->request->fetch(PDO::FETCH_OBJ);
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+    public function displayByIdUser($id_utilisateur)
+    {
+        try {
+            $this->request = $this->connection->prepare("SELECT r.*, v.nom, v.photo FROM reservation r INNER JOIN vehicule v ON r.id_vehicule = v.id_vehicule WHERE id_utilisateur = :id_utilisateur");
+            $this->request->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
+            $this->request->execute();
+            return $this->request->fetchAll(PDO::FETCH_OBJ);
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+    public function displayByIdCar($id_vehicule)
+    {
+        try {
+            $this->request = $this->connection->prepare("SELECT * FROM reservation WHERE id_vehicule = :id_vehicule");
+            $this->request->bindValue(':id_vehicule', $id_vehicule, PDO::PARAM_INT);
+            $this->request->execute();
+            return $this->request->fetch(PDO::FETCH_OBJ);
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+
+    // Créer une nouvelle réservation
+    public function create(Reservation $reservation)
+    {
+        try {
+            $this->request = $this->connection->prepare(
+                "INSERT INTO reservation (date_creation, id_utilisateur, id_vehicule, montant, date_debut, date_fin, forfait) 
+                 VALUES (NOW(), :id_utilisateur, :id_vehicule, :montant, :date_debut, :date_fin, :forfait)"
+            );
+
+            $this->request->bindValue(':id_utilisateur', $reservation->getId_utilisateur(), PDO::PARAM_INT);
+            $this->request->bindValue(':id_vehicule', $reservation->getId_vehicule(), PDO::PARAM_INT);
+            $this->request->bindValue(':montant', $reservation->getMontant(), PDO::PARAM_STR);
+            $this->request->bindValue(':date_debut', $reservation->getDate_debut(), PDO::PARAM_STR);
+            $this->request->bindValue(':date_fin', $reservation->getDate_fin(), PDO::PARAM_STR);
+            $this->request->bindValue(':forfait', $reservation->getForfait(), PDO::PARAM_STR);
+
+            return $this->request->execute();
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+
+    // Mettre à jour une réservation
+    public function update(Reservation $reservation)
+    {
+        try {
+            $this->request = $this->connection->prepare(
+                "UPDATE reservation SET 
+                 id_utilisateur = :id_utilisateur, id_vehicule = :id_vehicule, 
+                 montant = :montant, date_debut = :date_debut, date_fin = :date_fin, forfait = :forfait 
+                 WHERE id_reservation = :id_reservation"
+            );
+
+            $this->request->bindValue(':id_reservation', $reservation->getId_reservation(), PDO::PARAM_INT);
+            $this->request->bindValue(':id_utilisateur', $reservation->getId_utilisateur(), PDO::PARAM_INT);
+            $this->request->bindValue(':id_vehicule', $reservation->getId_vehicule(), PDO::PARAM_INT);
+            $this->request->bindValue(':montant', $reservation->getMontant(), PDO::PARAM_STR);
+            $this->request->bindValue(':date_debut', $reservation->getDate_debut(), PDO::PARAM_STR);
+            $this->request->bindValue(':date_fin', $reservation->getDate_fin(), PDO::PARAM_STR);
+            $this->request->bindValue(':forfait', $reservation->getForfait(), PDO::PARAM_STR);
+
+            return $this->request->execute();
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+
+    // Supprimer une réservation
+    public function delete($id_reservation)
+    {
+        try {
+            $this->request = $this->connection->prepare("DELETE FROM reservation WHERE id_reservation = :id_reservation");
+            $this->request->bindValue(":id_reservation", $id_reservation, PDO::PARAM_INT);
+            return $this->request->execute();
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+
+    // Rechercher une réservation avec INNER JOIN sur utilisateur et véhicule
+    public function search($searchReservation)
+    {
+        try {
+            if (empty($searchReservation)) {
+                return [];
+            }
+            $this->request = $this->connection->prepare(
+                "SELECT r.*, u.nom, u.prenom, u.email, u.ville, u.numero_telephone, 
+                        v.nom AS vehicule_nom, v.couleur, v.annee, v.description 
+                 FROM reservation r
+                 INNER JOIN utilisateur u ON r.id_utilisateur = u.id_utilisateur
+                 INNER JOIN vehicule v ON r.id_vehicule = v.id_vehicule
+                 WHERE u.nom LIKE :searchReservation OR v.nom LIKE :searchReservation"
+            );
+            $this->request->bindValue(':searchReservation', '%' . $searchReservation . '%', PDO::PARAM_STR);
+            $this->request->execute();
+            return $this->request->fetchAll(PDO::FETCH_OBJ);
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+}
