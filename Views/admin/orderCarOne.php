@@ -18,15 +18,6 @@
                 <p><?= !empty($vehicule->description) ? nl2br(htmlspecialchars($vehicule->description)) : 'Aucune description' ?></p>
             </div>
 
-            <!-- Photo -->
-            <div class="order-admin-one">
-                <?php if (!empty($vehicule->photo)): ?>
-                    <img src="<?= htmlspecialchars($vehicule->photo) ?>" alt="Photo du véhicule" style="max-width: 100%;">
-                <?php else: ?>
-                    <p>Aucune photo disponible</p>
-                <?php endif; ?>
-            </div>
-
             <!-- Tableau des prix -->
             <div class="order-admin-one">
                 <h2>Tarifs</h2>

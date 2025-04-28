@@ -89,7 +89,7 @@
 
                     <div class="form-reservation-demande">
                         <label for="quantite_forfait">*Quantité :</label>
-                        <input type="number" name="quantite_forfait" id="quantite_forfait" min="1" required>
+                        <input type="number" name="quantite_forfait" id="quantite_forfait" min="1" max="7" required>
                     </div>
 
                     <div class="form-reservation-demande">

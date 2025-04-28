@@ -65,16 +65,16 @@ class VehiculeModel extends DbConnect
         }
     }
     public function displayDesc()
-{
-    try {
-        // Requête pour afficher les véhicules triés par prix décroissant
-        $this->request = $this->connection->prepare("SELECT * FROM vehicule ORDER BY prix_km DESC");
-        $this->request->execute();
-        return $this->request->fetchAll(PDO::FETCH_OBJ);
-    } catch (Exception $e) {
-        die("Erreur SQL : " . $e->getMessage());
+    {
+        try {
+            // Requête pour afficher les véhicules triés par prix décroissant
+            $this->request = $this->connection->prepare("SELECT * FROM vehicule ORDER BY prix_km DESC");
+            $this->request->execute();
+            return $this->request->fetchAll(PDO::FETCH_OBJ);
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
     }
-}
 
     public function displayByCategory($id_categorie)
     {
@@ -192,6 +192,39 @@ class VehiculeModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
+
+    public function searchVehicule($search)
+    {
+        try {
+            $sql = "SELECT v.*, m.nom AS modele, ma.nom AS marque, c.type AS carburant, t.type AS transmission,
+                       p.nombre AS places, co.nom AS couleur, ca.nom AS categorie 
+                FROM vehicule v
+                INNER JOIN modele m ON v.id_modele = m.id_modele
+                INNER JOIN marque ma ON v.id_marque = ma.id_marque
+                INNER JOIN carburant c ON v.id_carburant = c.id_carburant
+                INNER JOIN transmission t ON v.id_transmission = t.id_transmission
+                INNER JOIN places p ON v.id_places = p.id_places
+                INNER JOIN couleur co ON v.id_couleur = co.id_couleur
+                INNER JOIN categorie ca ON v.id_categorie = ca.id_categorie
+                WHERE v.nom LIKE :search
+                   OR m.nom LIKE :search
+                   OR ma.nom LIKE :search
+                   OR c.type LIKE :search
+                   OR t.type LIKE :search
+                   OR p.nombre LIKE :search
+                   OR co.nom LIKE :search
+                   OR ca.nom LIKE :search";
+
+            $this->request = $this->connection->prepare($sql);
+            $this->request->bindValue(":search", "%$search%", PDO::PARAM_STR);
+            $this->request->execute();
+
+            return $this->request->fetchAll(PDO::FETCH_OBJ);
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+
 
     public function search(
         $searchCar = '',

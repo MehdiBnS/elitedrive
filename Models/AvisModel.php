@@ -146,19 +146,25 @@ class AvisModel extends DbConnect
         }
     }
     // Rechercher un avis
-    public function search($searchAvis)
+    public function search($search)
     {
         try {
-            if (empty($searchAvis)) {
+            if (empty($search)) {
                 return [];
             }
             $this->request = $this->connection->prepare(
-                "SELECT a.*, u.id_utilisateur, u.nom, u.prenom 
+                "SELECT a.*, u.id_utilisateur, u.nom, u.prenom, v.nom AS nom_vehicule
                 FROM avis a 
                 INNER JOIN utilisateur u ON a.id_utilisateur = u.id_utilisateur 
-                WHERE a.commentaire LIKE :searchAvis"
+                INNER JOIN vehicule v ON a.id_vehicule = v.id_vehicule
+                WHERE a.commentaire LIKE :search
+                OR a.note LIKE :search
+                OR u.nom LIKE :search
+                OR u.prenom LIKE :search
+                OR a.date_creation LIKE :search
+                OR v.nom LIKE :search"
             );
-            $this->request->bindValue(':searchAvis', '%' . $searchAvis . '%', PDO::PARAM_STR);
+            $this->request->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
             $this->request->execute();
             return $this->request->fetchAll(PDO::FETCH_OBJ);
         } catch (Exception $e) {

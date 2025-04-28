@@ -72,7 +72,7 @@
     </div>
 
     <div class="avis-section">
-        <?php if (!empty($_SESSION['id_utilisateur']) && $_SESSION['role'] == 0) : ?>
+        <?php if (!empty($_SESSION['id_utilisateur']) && isset($_SESSION['role']) && $_SESSION['role'] == 0) : ?>
             <form action="index.php?controller=Avis&action=create&id_vehicule=<?= $vehicule->id_vehicule ?>" method="POST" id="avisForm">
                 <h1>Vous souhaitez nous laisser un avis ?</h1>
                 <label for="rate"></label>
@@ -93,7 +93,7 @@
 
                 <button type="submit">Envoyer</button>
             </form>
-        <?php elseif ($_SESSION['role'] == 1) : ?>
+        <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] == 1) : ?>
             <small>Conformément aux règles d’EliteDrive, les administrateurs ne sont pas autorisés à laisser des avis afin de garantir l’objectivité.</small>
         <?php else : ?>
             <small>Veuillez-vous connecter avec votre compte client pour déposer un avis</small>
@@ -117,7 +117,7 @@
                                 }
                                 ?>
                             </div>
-                            : <?= nl2br(htmlspecialchars(empty($a->commentaire) ? 'Avis sans message' : $a->commentaire)) ?>
+                            <p>Commentaire : <?= nl2br(htmlspecialchars(empty($a->commentaire) ? 'Avis sans message' : $a->commentaire)) ?></p>
 
                             <?php if (
                                 isset($_SESSION['id_utilisateur']) &&

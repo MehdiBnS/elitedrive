@@ -27,6 +27,7 @@ use elitedrive\Entities\Archive;
 use elitedrive\Models\AvisModel;
 use elitedrive\Entities\Utilisateur;
 use elitedrive\Entities\Categorie;
+use elitedrive\Models\MailsModel;
 
 class AdminController extends Controller
 {
@@ -53,9 +54,13 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $utilisateurModel = new UtilisateurModel();
-            $utilisateurs = $utilisateurModel->displayAll();
 
-            $this->render('admin/orderUsers', ['utilisateurs' => $utilisateurs]);
+            $search = isset($_POST['search']) ? trim($_POST['search']) : '';
+            $utilisateurs = !empty($search)
+                ? $utilisateurModel->search($search)
+                : $utilisateurModel->displayAll();
+
+            $this->render('admin/orderUsers', ['utilisateurs' => $utilisateurs, 'search' => $search]);
         } else {
             $_SESSION['message'] = "Accès refusé.";
             header('Location: index.php');
@@ -207,16 +212,27 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $vehiculeModel = new VehiculeModel();
-            $vehicules = $vehiculeModel->displayAll();
+
+            $search = isset($_POST['search']) ? trim($_POST['search']) : '';
+            $vehicules = !empty($search)
+                ? $vehiculeModel->searchVehicule($search)
+                : $vehiculeModel->displayAll();
+
             $options = $vehiculeModel->displayOptions();
 
-            $this->render('admin/orderCars', ['vehicules' => $vehicules, 'options' => $options]);
+            $this->render('admin/orderCars', [
+                'vehicules' => $vehicules,
+                'options' => $options,
+                'search' => $search
+            ]);
         } else {
             $_SESSION['message'] = "Accès refusé.";
             header('Location: index.php');
             exit();
         }
     }
+
+
 
 
     public function orderCarOne()
@@ -358,7 +374,7 @@ class AdminController extends Controller
                 $prix_semaine = filter_var($_POST['prix_semaine'], FILTER_VALIDATE_FLOAT);
                 $prix_mois = filter_var($_POST['prix_mois'], FILTER_VALIDATE_FLOAT);
                 $annee = filter_var($_POST['annee'], FILTER_VALIDATE_INT);
-                $description =trim($_POST['description']);
+                $description = trim($_POST['description']);
                 $statut = in_array($_POST['statut'], ['Disponible', 'Réserver', 'Loué', 'Maintenance']) ? $_POST['statut'] : 'Disponible';
                 $id_categorie = filter_var($_POST['id_categorie'], FILTER_VALIDATE_INT);
                 $id_modele = filter_var($_POST['id_modele'], FILTER_VALIDATE_INT);
@@ -415,8 +431,8 @@ class AdminController extends Controller
                     }
                 } else {
                     $vehiculeModel = new VehiculeModel();
-                    $vehiculeExistant = $vehiculeModel->displayOne($id_vehicule); 
-                
+                    $vehiculeExistant = $vehiculeModel->displayOne($id_vehicule);
+
                     if ($vehiculeExistant && $vehiculeExistant->photo) {
                         $vehicule->setPhoto($vehiculeExistant->photo);
                     }
@@ -483,7 +499,10 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $archiveModel = new ArchiveModel();
-            $archives = $archiveModel->displayAll();
+            $search = isset($_POST['search']) ? trim($_POST['search']) : '';
+            $archives = !empty($search)
+            ? $archiveModel->search($search)
+            : $archiveModel->displayAll();
 
             $this->render('admin/orderArchives', ['archives' => $archives]);
         } else {
@@ -598,7 +617,11 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $avisModel = new AvisModel();
-            $avis = $avisModel->displayAll();
+            $search = isset($_POST['search']) ? trim($_POST['search']) : '';
+            $avis = !empty($search)
+                ? $avisModel->search($search)
+                : $avisModel->displayAll();
+
 
             $this->render('admin/orderAvis', ['avis' => $avis]);
         } else {
@@ -829,8 +852,8 @@ class AdminController extends Controller
                     }
                 } else {
                     $categorieModel = new CategorieModel();
-                    $categorieExistant = $categorieModel->displayOne($id_categorie); 
-                
+                    $categorieExistant = $categorieModel->displayOne($id_categorie);
+
                     if ($categorieExistant && $categorieExistant->photo) {
                         $categorie->setPhoto($categorieExistant->photo);
                     }
@@ -1644,11 +1667,15 @@ class AdminController extends Controller
         // Vérification que l'utilisateur est bien un administrateur
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $demandeReservationModel = new Demande_ReservationModel();
-            $demandes = $demandeReservationModel->displayAll();
 
-            $this->render('admin/orderDemande', ['demandes' => $demandes]);
+            $search = isset($_POST['search']) ? trim($_POST['search']) : '';
+            $demandes = !empty($search)
+                ? $demandeReservationModel->search($search)
+                : $demandeReservationModel->displayAll();
+
+            $this->render('admin/orderDemande', ['demandes' => $demandes, 'search' => $search]);
         } else {
-            $_SESSION['message'] = "Accès refusé. Administrateur uniquement.";
+            $_SESSION['message'] = "Accès refusé.";
             header('Location: index.php?controller=Admin&action=backOffice');
             exit();
         }
@@ -1735,13 +1762,21 @@ class AdminController extends Controller
                 $statut = $_POST['statut'];
                 $id_utilisateur = $_POST['id_utilisateur'];
                 $email = $_POST['email'];
-                $nom = $_POST['nom'];
-                $prenom = $_POST['prenom'];
                 $id_vehicule = $_POST['id_vehicule'];
                 $montant = $_POST['montant'];
                 $forfait = $_POST['forfait'];
                 $date_debut = $_POST['date_debut'];
                 $date_fin = $_POST['date_fin'];
+
+                $utilisateurModel = new UtilisateurModel();
+                $utilisateur = $utilisateurModel->displayOne($id_utilisateur);
+                $nom = $utilisateur->nom;
+                $prenom = $utilisateur->prenom;
+
+                $vehiculeModel = new VehiculeModel();
+                $vehicule = $vehiculeModel->displayOne($id_vehicule);
+                $modele = $vehicule->modele;
+                $marque = $vehicule->marque;
 
                 $demandeReservationModel = new Demande_ReservationModel();
                 $demandeData = new Demande_Reservation();
@@ -1760,21 +1795,35 @@ class AdminController extends Controller
 
                     if ($reservationModel->create($reservation)) {
                         $statut = 'Réserver';
-                        $vehiculeModel = new VehiculeModel();
                         $vehiculeModel->updateStatut($statut, $id_vehicule);
                         $_SESSION['message'] = "Réservation créée avec succès.";
+
+                        $subject = "Votre réservation a été acceptée - EliteDrive";
+                        $body = file_get_contents(__DIR__ . '/../Views/mails/accepteReserve.php');
+                        $body = str_replace(
+                            ['{{nom}}', '{{prenom}}', '{{modele}}', '{{marque}}', '{{montant}}', '{{forfait}}', '{{date_debut}}', '{{date_fin}}'],
+                            [$nom, $prenom, $modele, $marque, $montant, $forfait, $date_debut, $date_fin],
+                            $body
+                        );
+
+                        $mailModel = new MailsModel();
+                        $mailModel->sendMail($email, $subject, $body);
                     } else {
                         $_SESSION['message'] = "Erreur lors de la création de la réservation.";
                     }
                 }
 
                 if ($statut === 'Refusée') {
-                    $to = $email;
-                    $subject = "Votre demande a été refusée";
-                    $message = "Bonjour $prenom $nom,\n\nVotre demande de réservation a été refusée.";
-                    $headers = "From: admin@votresite.com";
+                    $subject = "Votre demande a été refusée - EliteDrive";
+                    $body = file_get_contents(__DIR__ . '/../Views/mails/refusReserve.php');
+                    $body = str_replace(
+                        ['{{nom}}', '{{prenom}}', '{{modele}}', '{{marque}}'],
+                        [$nom, $prenom, $modele, $marque],
+                        $body
+                    );
 
-                    if (mail($to, $subject, $message, $headers)) {
+                    $mailModel = new MailsModel();
+                    if ($mailModel->sendMail($email, $subject, $body)) {
                         $_SESSION['message'] = "Email de refus envoyé.";
                     } else {
                         $_SESSION['message'] = "Erreur lors de l'envoi de l'email de refus.";
@@ -1800,6 +1849,7 @@ class AdminController extends Controller
             exit();
         }
     }
+
 
 
 
@@ -1845,9 +1895,12 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $reservationModel = new ReservationModel();
-            $reservations = $reservationModel->displayAll();
+            $search = isset($_POST['search']) ? trim($_POST['search']) : '';
+            $reservations = !empty($search)
+                ? $reservationModel->search($search)
+                : $reservationModel->displayAll();
 
-            $this->render('admin/orderReservations', ['reservations' => $reservations]);
+            $this->render('admin/orderReservations', ['reservations' => $reservations, 'search' => $search]);
         } else {
             $_SESSION['message'] = "Accès refusé.";
             header('Location: index.php');

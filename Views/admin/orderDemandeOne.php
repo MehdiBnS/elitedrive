@@ -58,7 +58,7 @@
                 <div class="order-admin-one-button">
                     <a href="index.php?controller=Admin&action=orderDemande">Retour</a>
                     <button type="submit" name="statut" value="Acceptée" onclick="return confirm('Voulez-vous vraiment accepter cette demande ?')">Accepter</button>
-                    <button type="submit" name="statut" value="Refusée" onclick="return confirm('Voulez-vous vraiment accepter cette demande ?')">Refuser</button>
+                    <button type="submit" name="statut" value="Refusée" onclick="return confirm('Voulez-vous vraiment refuser cette demande ?')">Refuser</button>
                 </div>
             </div>
         </form>

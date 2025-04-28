@@ -123,7 +123,7 @@ class Demande_ReservationModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-    
+
 
     // Supprimer une demande par ID
     public function delete($id_demande)
@@ -150,20 +150,25 @@ class Demande_ReservationModel extends DbConnect
     }
 
     // Recherche une demande de réservation par message
-    public function search($searchDemande)
+    public function search($search)
     {
         try {
-            if (empty($searchDemande)) {
-                return [];
-            }
-            $this->request = $this->connection->prepare(
-                "SELECT d.*, u.id_utilisateur, u.nom, u.prenom, v.id_vehicule, v.nom
+            $sql ="SELECT d.*, u.id_utilisateur, u.nom AS nom_utilisateur, u.prenom, v.nom
                 FROM demande_reservation d 
-                INNER JOIN utilisateur u ON d.id_utilisateur = u.id_utilisateur 
-                INNER JOIN vehicule v ON d.id_vehicule = v.id_vehicule
-                WHERE d.message LIKE :searchDemande"
-            );
-            $this->request->bindValue(':searchDemande', '%' . $searchDemande . '%', PDO::PARAM_STR);
+                LEFT JOIN utilisateur u ON d.id_utilisateur = u.id_utilisateur 
+                LEFT JOIN vehicule v ON d.id_vehicule = v.id_vehicule
+                WHERE d.message LIKE :search
+                OR d.date_debut LIKE :search
+                OR d.date_fin LIKE :search
+                OR d.montant LIKE :search
+                OR d.statut LIKE :search
+                OR d.forfait LIKE :search
+                OR d.date_creation LIKE :search
+                OR u.nom LIKE :search
+                OR u.prenom LIKE :search
+                OR v.nom LIKE :search";
+            $this->request = $this->connection->prepare($sql);
+            $this->request->bindValue(':search', "%$search%", PDO::PARAM_STR);
             $this->request->execute();
             return $this->request->fetchAll(PDO::FETCH_OBJ);
         } catch (Exception $e) {

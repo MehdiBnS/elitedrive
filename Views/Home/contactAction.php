@@ -3,7 +3,7 @@
     <div id="contact-section">
         <div class="form-container" id="contact-form">
             <h2>Une question ?</h2>
-            <form action="#" method="POST" class="generic-form">
+            <form action="index.php?controller=Contact&action=contactUtilisateur" method="POST" class="generic-form">
 
                 <div class="form-group">
                     <label for="nom">Nom</label>

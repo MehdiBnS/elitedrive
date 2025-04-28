@@ -7,6 +7,7 @@ use elitedrive\Entities\Utilisateur;
 use elitedrive\Models\AvisModel;
 use elitedrive\Models\Demande_ReservationModel;
 use elitedrive\Models\ReservationModel;
+use elitedrive\Models\MailsModel;
 
 class UtilisateurController extends Controller
 {
@@ -82,6 +83,11 @@ class UtilisateurController extends Controller
 
             $utilisateurModel = new UtilisateurModel();
             if ($utilisateurModel->create($utilisateur)) {
+                $mailModel = new MailsModel();
+                $subject = "Bienvenue sur EliteDrive !";
+                $body = file_get_contents(__DIR__ . '/../Views/mails/subUt.php');
+                $to = $email;
+                $mailModel->sendMail($to, $subject, $body);
                 $_SESSION['id_utilisateur'] = $utilisateur->getId_utilisateur();
                 $_SESSION['email'] = $utilisateur->getEmail();
                 $_SESSION['numero_telephone'] = $utilisateur->getNumero_telephone();
@@ -90,7 +96,7 @@ class UtilisateurController extends Controller
                 $_SESSION['prenom'] = $utilisateur->getPrenom();
                 $_SESSION['ville'] = $utilisateur->getVille();
 
-                header('Location: index.php?controller=Home&action=homeAction');
+                header('Location: index.php?controller=Home&action=showProfile');
                 exit();
             } else {
                 $message = "Erreur lors de l'inscription.";
@@ -286,5 +292,63 @@ class UtilisateurController extends Controller
             header('Location: index.php?controller=Utilisateur&action=connectForm');
             exit();
         }
+    }
+
+    public function resetPasswordVerif()
+    {
+        if (!isset($_SESSION['id_utilisateur'])) {
+            header('Location: index.php?controller=Utilisateur&action=connectForm');
+            exit();
+        }
+
+        $id_utilisateur = $_SESSION['id_utilisateur'];
+        $utilisateurModel = new UtilisateurModel();
+        $utilisateur = $utilisateurModel->displayOne($id_utilisateur);
+        if (!$utilisateur) {
+            $_SESSION['message'] = "Utilisateur introuvable.";
+            header('Location: index.php?controller=Utilisateur&action=connectForm');
+            exit();
+        }
+        $this->render('utilisateur/resetPasswordVerif', ['utilisateur' => $utilisateur]);
+    }
+
+    public function resetPassword()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_utilisateur = $_SESSION['id_utilisateur'];
+            $current_password = $_POST['current_password'];
+            $new_password = $_POST['password'];
+
+            $utilisateurModel = new UtilisateurModel();
+            $utilisateur = $utilisateurModel->displayOne($id_utilisateur);
+
+            if (password_verify($current_password, $utilisateur->mot_de_passe)) {
+                // Vérification des critères de sécurité du mot de passe
+                if (strlen($new_password) < 8) {
+                    $_SESSION['message'] = "Le mot de passe doit contenir au moins 8 caractères.";
+                } elseif (!preg_match('/[A-Z]/', $new_password) || !preg_match('/[a-z]/', $new_password)) {
+                    $_SESSION['message'] = "Le mot de passe doit contenir une majuscule et une minuscule.";
+                } elseif (!preg_match('/\d/', $new_password)) {
+                    $_SESSION['message'] = "Le mot de passe doit contenir au moins un chiffre.";
+                } elseif (!preg_match('/[@$!%*?&]/', $new_password)) {
+                    $_SESSION['message'] = "Le mot de passe doit contenir au moins un symbole spécial (@$!%*?&).";
+                } else {
+                    // Si le nouveau mot de passe est valide, le mettre à jour
+                    $mot_de_passe_hash = password_hash($new_password, PASSWORD_DEFAULT);
+                    if ($utilisateurModel->updatePassword($id_utilisateur, $mot_de_passe_hash)) {
+                        $_SESSION['message'] = "Mot de passe mis à jour avec succès.";
+                        header('Location: index.php?controller=Utilisateur&action=showProfile');
+                        exit();
+                    } else {
+                        $_SESSION['message'] = "Erreur lors de la mise à jour du mot de passe.";
+                    }
+                }
+            } else {
+                $_SESSION['message'] = "Mot de passe actuel incorrect.";
+            }
+        }
+
+        header('Location: index.php?controller=Utilisateur&action=resetPasswordVerif');
+        exit();
     }
 }

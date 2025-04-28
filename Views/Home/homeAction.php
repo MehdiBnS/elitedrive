@@ -66,8 +66,8 @@
 
     <div id="newsletter">
         <h3>Rester au courant de nos nouveautés !</h3>
-        <form class="subscribe-form" action="#" method="post">
-            <input type="email" class="email-input" placeholder="Votre email">
+        <form class="subscribe-form" action="index.php?controller=Contact&action=newsletter" method="POST">
+            <input type="email" class="email-input" placeholder="Votre email" name="email" required>
             <button type="submit">S'abonner</button>
             <p class="error-message-newsletter" style="display: none; color: red;text-align:center">Veuillez entrer un email valide.</p>
         </form>

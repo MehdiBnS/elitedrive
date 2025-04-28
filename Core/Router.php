@@ -28,7 +28,7 @@ class Router
         } else {
             http_response_code(404);
             echo "<div class='alert alert-danger'><strong>Il y a eu un problème !</strong> La page recherchée n'existe pas.</div>";
-            echo '<a href="index.php?controller=Main&action=home">Retour à l\'accueil</a>';
+            echo '<a href="index.php?controller=Home&action=homeaction">Retour à l\'accueil</a>';
         }
     }
 }

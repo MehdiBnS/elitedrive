@@ -133,21 +133,27 @@ class ReservationModel extends DbConnect
     }
 
     // Rechercher une réservation avec INNER JOIN sur utilisateur et véhicule
-    public function search($searchReservation)
+    public function search($search)
     {
         try {
-            if (empty($searchReservation)) {
-                return [];
-            }
             $this->request = $this->connection->prepare(
                 "SELECT r.*, u.nom, u.prenom, u.email, u.ville, u.numero_telephone, 
-                        v.nom AS vehicule_nom, v.couleur, v.annee, v.description 
+                        v.nom AS vehicule_nom, v.annee, v.description 
                  FROM reservation r
                  INNER JOIN utilisateur u ON r.id_utilisateur = u.id_utilisateur
                  INNER JOIN vehicule v ON r.id_vehicule = v.id_vehicule
-                 WHERE u.nom LIKE :searchReservation OR v.nom LIKE :searchReservation"
+                 WHERE u.nom LIKE :search 
+                 OR v.nom LIKE :search
+                 OR u.prenom LIKE :search
+                 OR u.email LIKE :search
+                 OR u.ville LIKE :search
+                 OR u.numero_telephone LIKE :search
+                 OR r.date_debut LIKE :search
+                 OR r.date_fin LIKE :search
+                 OR r.montant LIKE :search
+                 OR r.forfait LIKE :search"
             );
-            $this->request->bindValue(':searchReservation', '%' . $searchReservation . '%', PDO::PARAM_STR);
+            $this->request->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
             $this->request->execute();
             return $this->request->fetchAll(PDO::FETCH_OBJ);
         } catch (Exception $e) {

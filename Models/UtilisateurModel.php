@@ -147,4 +147,17 @@ class UtilisateurModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
+
+    public function updatePassword($id_utilisateur, $mot_de_passe_hash)
+    {
+        try {
+
+            $this->request = $this->connection->prepare("UPDATE utilisateur SET mot_de_passe = :mot_de_passe_hash WHERE id_utilisateur = :id_utilisateur");
+            $this->request->bindValue(':mot_de_passe_hash', $mot_de_passe_hash, PDO::PARAM_STR);
+            $this->request->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
+            return $this->request->execute();
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
 }

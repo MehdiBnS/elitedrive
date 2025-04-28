@@ -35,6 +35,7 @@
                     </form>
                 </div>
             </div>
+            
             <ul>
                 <?php foreach ($options['categories'] as $categorie): ?>
                     <li>

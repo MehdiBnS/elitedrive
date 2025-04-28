@@ -177,13 +177,14 @@
                     <?php endforeach; ?>
                 </div>
 
-                <!-- Bouton de retour -->
-                <a href="index.php?controller=Vehicule&action=showCar" class="btn-back">Revenir à la liste complète</a>
+                <div id="back-btn">
+                    <a href="index.php?controller=Vehicule&action=showCar" class="btn-back">Revenir à la liste complète</a>
+                </div>
             </div>
 
         <?php elseif (isset($_GET['id_categorie'])) : ?>
             <div id="vehicule-section">
-                <p>Aucun véhicule trouvé pour cette catégorie.</p>
+                <p id="msg-category">Aucun véhicule trouvé pour cette catégorie.</p>
 
             </div>
 
@@ -216,7 +217,9 @@
             </div>
 
             <!-- Bouton de retour -->
-            <a href="index.php?controller=Vehicule&action=showCar" class="btn-back">Revenir à la liste complète</a>
+            <div id="back-btn">
+                <a href="index.php?controller=Vehicule&action=showCar" class="btn-back">Revenir à la liste complète</a>
+            </div>
         <?php endif; ?>
 
 
@@ -275,7 +278,9 @@
             <?php elseif (empty($vehiculeCategorie) && empty($vehicule) && empty($vehiculeSearch)) : ?>
                 <div id="vehicule-section">
                     <p>Aucun véhicule trouvé.</p>
-                    <a href="index.php?controller=Vehicule&action=showCar" class="btn-back">Revenir à la liste complète</a>
+                    <div id="back-btn">
+                        <a href="index.php?controller=Vehicule&action=showCar" class="btn-back">Revenir à la liste complète</a>
+                    </div>
                 </div>
             <?php endif; ?>
 

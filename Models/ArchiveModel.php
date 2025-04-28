@@ -109,36 +109,35 @@ class ArchiveModel extends DbConnect
     }
 
     // Rechercher des archives avec un critère
-    public function search($searchArchive)
+    public function search($search)
     {
         try {
-            if (empty($searchArchive)) {
+            if (empty($search)) {
                 return [];
             }
             // Préparer la requête SQL avec des conditions de recherche sur toutes les colonnes concernées
             $this->request = $this->connection->prepare(
                 "SELECT * FROM archive 
-            WHERE nom LIKE :searchArchive 
-            OR prenom LIKE :searchArchive
-            OR numero_telephone LIKE :searchArchive
-            OR ville LIKE :searchArchive
-            OR email LIKE :searchArchive
-            OR nom_vehicule LIKE :searchArchive
-            OR modele LIKE :searchArchive
-            OR marque LIKE :searchArchive
-            OR categorie_vehicule LIKE :searchArchive
-            OR montant LIKE :searchArchive
-            OR date LIKE :searchArchive"
+            WHERE nom LIKE :search 
+            OR prenom LIKE :search
+            OR numero_telephone LIKE :search
+            OR ville LIKE :search
+            OR email LIKE :search
+            OR nom_vehicule LIKE :search
+            OR modele LIKE :search
+            OR marque LIKE :search
+            OR categorie_vehicule LIKE :search
+            OR montant LIKE :search
+            OR date LIKE :search"
             );
 
             // Ajouter des jokers pour effectuer une recherche partielle
-            $this->request->bindValue(':searchArchive', "%$searchArchive%", PDO::PARAM_STR);
+            $this->request->bindValue(':search', "%$search%", PDO::PARAM_STR);
 
             // Exécuter la requête
             $this->request->execute();
 
-            // Récupérer les résultats sous forme de tableau associatif
-            return $this->request->fetchAll(PDO::FETCH_ASSOC);
+            return $this->request->fetchAll(PDO::FETCH_OBJ);
         } catch (Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }

@@ -4,7 +4,7 @@ const errorMessage = form.getElementsByClassName('error-message-newsletter')[0];
 
 console.log(form, emailInput, errorMessage);
 
-form.addEventListener('submit', function(event) {
+form.addEventListener('submit', function (event) {
     event.preventDefault();
 
     const emailValue = emailInput.value;
@@ -14,8 +14,25 @@ form.addEventListener('submit', function(event) {
         console.log("Email invalide ou vide");
         errorMessage.style.display = 'block';
     } else {
-        errorMessage.style.display = 'none';
-        alert('Formulaire soumis avec succès !');
-        emailInput.value = '';
+        errorMessage.style.display = 'none'; 
+        const formData = new FormData();
+        formData.append('email', emailValue);
+        fetch('index.php?controller=Contact&action=newsletter', { 
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Formulaire soumis avec succès !');
+                    emailInput.value = ''; 
+                } else {
+                    alert('Erreur lors de l\'envoi du mail');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la soumission.');
+            });
     }
 });
