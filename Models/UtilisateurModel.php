@@ -48,7 +48,6 @@ class UtilisateurModel extends DbConnect
             $this->request->bindValue(':numero_telephone', $utilisateur->getNumero_telephone(), PDO::PARAM_STR);
             $this->request->bindValue(':ville', $utilisateur->getVille(), PDO::PARAM_STR);
             $this->request->bindValue(':role', $utilisateur->getRole(), PDO::PARAM_STR);
-            //$this->request->bindValue(':date_creation', $utilisateur->getDate_creation(), PDO::PARAM_STR);
             $this->request->bindValue(':email', $utilisateur->getEmail(), PDO::PARAM_STR);
 
             return $this->request->execute();

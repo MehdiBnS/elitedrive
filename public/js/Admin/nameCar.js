@@ -17,5 +17,6 @@
 
         marqueSelect.addEventListener('change', updateNomVehicule);
         modeleSelect.addEventListener('change', updateNomVehicule);
+        updateNomVehicule();
     });
 

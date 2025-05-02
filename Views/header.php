@@ -14,6 +14,10 @@
 </head>
 
 <body>
+    <div class="loading-container">
+        <div class="loading"></div>
+    </div>
+
     <header>
         <div id="container-logo">
             <a href="index.php?controller=Utilisateur&action=connectForm" class="icon-link">

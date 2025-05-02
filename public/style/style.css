@@ -8,6 +8,33 @@ body {
 
 }
 
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 99999999999999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading {
+    width: 100px;
+    height: 100px;
+    border: 8px solid #ccc;
+    border-top: 10px solid darkgoldenrod;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+
 /* Header */
 header {
     background-color: black;
@@ -1901,6 +1928,10 @@ textarea.form-input-contact {
     background-color: #e5673d;
 }
 
+.title-demande {
+    display: none;
+}
+
 /* deletePage */
 .deletepage {
     max-width: 800px;
@@ -2165,6 +2196,7 @@ textarea.form-input-contact {
     border-radius: 10px;
     margin-bottom: 30px;
     overflow-x: auto;
+    min-height: 70vh;
 }
 
 .order-admin table {
@@ -2253,6 +2285,7 @@ textarea.form-input-contact {
     justify-content: center;
     z-index: 99;
     position: relative;
+    min-height: 70vh;
 
 }
 .order-admin-one {
@@ -2260,7 +2293,8 @@ textarea.form-input-contact {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+
+
 }
 
 
@@ -2355,8 +2389,20 @@ textarea.form-input-contact {
     width: 5%;
 
 }
+.btn-edit {
+    width: 100%;
+    background-color: darkgoldenrod;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
 
-
+.btn-edit:hover {
+    background-color: rgb(233, 171, 12);
+}
 
 /* modal */
 
@@ -2500,119 +2546,78 @@ textarea.form-input-contact {
 }
 
 /* formAdmin */
-.form-update-admin {
-    display: flex;
-    flex-direction: column;
-    max-height: 70vh;
-    overflow-y: auto;
-    gap: 50px;
-    padding: 20px;
-    border-radius: 10px;
+
+.modalUpdate {
+    display: none;
+    position: fixed;
+    z-index: 999999999999999999999999998999999999999999;
+    left: 0;
+    top: 0;
+    overflow: auto;
     width: 100%;
-    max-width: 1500px;
-    margin: 0 auto;
-    background-color: rgb(0, 0, 0, 0.75);
+    height: 100%;
     color: white;
-
+    font-size: 15px;
 }
 
-.modal-content-update {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.modal-update {
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 100%;
+    max-width: 1000px;
+    border-radius: 10px;
+    height: auto;
+    overflow: auto;
 }
 
-
-.form-update-admin label {
-    font-size: 16px;
-    margin-bottom: 8px;
-    font-weight: bold;
+.form-update-admin .form-group-admin {
+    margin-bottom: 15px;
 }
 
 .form-update-admin input,
 .form-update-admin select,
 .form-update-admin textarea {
-    padding: 12px;
-    font-size: 14px;
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    background: #f9f9f9;
+    color: #000;
     border: 1px solid #ccc;
-    border-radius: 5px;
-
+    border-radius: 4px;
 }
-
 .form-update-admin textarea {
-    resize: horizontal;
-    height: 100px;
-    width: 80%;
+    resize: vertical;
+    min-height: 100px;
 
 }
-
-.form-update-admin input:focus,
-.form-update-admin select:focus,
-.form-update-admin textarea:focus {
-    border-color: darkgoldenrod;
-    outline: none;
+.form-update-admin select {
+    cursor: pointer;
 }
 
 .form-update-admin button {
-    padding: 12px 18px;
+    padding: 10px 20px;
     background-color: darkgoldenrod;
-    font-size: 16px;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    width: 100%;
 }
 
 .form-update-admin button:hover {
-    background-color: rgb(121, 89, 9);
+    background-color: rgb(224, 165, 14);
 }
 
-.form-update-admin .form-group-admin {
-    margin-bottom: 20px;
+#photoPreview {
+    max-width: 100px;
+    display: none;
+    margin-top: 10px;
 }
 
-.form-update-admin .form-group-admin label {
-    font-size: 14px;
-}
-
-.form-update-admin select {
-    width: 100%;
-    height: 30px;
-    padding: 10px;
-}
-
-.form-update-admin img {
-    width: 200px;
-    height: 100px;
-    object-fit: cover;
-    overflow: hidden;
-}
-
-.form-update-admin .form-group-admin input,
-.form-update-admin .form-update-admin select,
-.form-update-admin .form-update-admin textarea {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.form-update-admin .form-group-admin select {
-    cursor: pointer;
-}
-
-.form-update-admin a {
-    margin-top: 20px;
-    text-decoration: none;
-    color: white;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    padding: 12px;
-    display: inline-block;
-    border-radius: 5px;
-    text-align: center;
-    transition: background-color 0.3s ease;
-}
-
-.form-update-admin a:hover {
-    color: #2c2c2c;
-    background-color: #f4f4f4;
-    border-color: #bbb;
+#photoLabel {
+    font-size: 12px;
+    color: #ccc;
 }

@@ -74,7 +74,7 @@ document.getElementById('formUpdateAvis').addEventListener('submit', function (e
         .then(resp => resp.text())
         .then(response => {
             modal.style.display = "none";
-            location.reload(); // ou mettre à jour le DOM si tu veux être un boss
+            location.reload(); 
         })
         .catch(error => {
             console.error('Erreur:', error);

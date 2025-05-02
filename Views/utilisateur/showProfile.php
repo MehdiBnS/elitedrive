@@ -177,7 +177,9 @@
                                         </svg>
                                     </a>
                                 </li>
+                                <div id="messageContainer"></div>
                             <?php endforeach; ?>
+
 
 
                         </ul>
@@ -215,3 +217,4 @@
         </div>
     </div>
 </section>
+<?php $scripts = ["accordeonsMenu", "Ajax/avisUpdate", "Ajax/deleteAvis"]; ?>

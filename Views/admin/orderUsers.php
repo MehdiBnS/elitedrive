@@ -30,7 +30,7 @@
 
                     <span class="close">&times;</span>
                     <h2>Créer un utilisateur</h2>
-                    <form method="POST" action="index.php?controller=Admin&action=createUser" enctype="multipart/form-data" class="form-cars-create" id="register-form">
+                    <form id="createUserForm" method="POST" action="index.php?controller=Admin&action=createUser" enctype="multipart/form-data" class="form-cars-create" id="register-form">
 
                         <label for="nom">Nom :</label>
                         <input type="text" id="nom" name="nom" required>
@@ -67,11 +67,12 @@
                         </select>
 
                         <button type="submit">Créer</button>
+                        <p id="statusMessage" style="text-align: center; color: darkgoldenrod"></p>
                     </form>
                 </div>
             </div>
         </div>
-        <table>
+        <table id="userTable">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -93,7 +94,10 @@
                         <td><?= htmlspecialchars($utilisateur->email) ?></td>
                         <td><?= htmlspecialchars($utilisateur->role) ?></td>
                         <td><a href="index.php?controller=Admin&action=deleteUser&id_utilisateur=<?= htmlspecialchars($utilisateur->id_utilisateur) ?>">Supprimer</a></td>
-                        <td><a href="index.php?controller=Admin&action=updateUserForm&id_utilisateur=<?= htmlspecialchars($utilisateur->id_utilisateur) ?>">Modifier</a></td>
+                        <td><button class="btn-edit-user" data-utilisateur='<?= json_encode($utilisateur) ?>'>
+                                Modifier
+                            </button>
+                        </td>
                         <td><a href="index.php?controller=Admin&action=orderUserOne&id_utilisateur=<?= htmlspecialchars($utilisateur->id_utilisateur) ?>">Afficher</a></td>
                     </tr>
                 <?php endforeach; ?>
@@ -105,3 +109,54 @@
         Aucun utilisateur trouvé.
     </div>
 <?php endif; ?>
+<div class="modal modalUpdateUser">
+    <div class="modal-update modalUpdateUser-content">
+        <span class="close closeUpdateUser">&times;</span>
+        <h2>Modifier un utilisateur</h2>
+
+        <form method="POST" action="index.php?controller=Admin&action=updateUser" class="form-update-admin">
+            <input type="hidden" id="id_utilisateur" name="id_utilisateur" readonly>
+
+            <div class="form-group-admin">
+                <label for="nom">Nom :</label>
+                <input type="text" id="nom" name="nom" class="form-input-admin" required>
+            </div>
+
+            <div class="form-group-admin">
+                <label for="prenom">Prénom :</label>
+                <input type="text" id="prenom" name="prenom" class="form-input-admin" required>
+            </div>
+
+            <div class="form-group-admin">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" class="form-input-admin" required>
+            </div>
+
+            <div class="form-group-admin">
+                <label for="numero_telephone">Téléphone :</label>
+                <input type="tel" id="numero_telephone" name="numero_telephone" class="form-input-admin" required>
+            </div>
+
+            <div class="form-group-admin">
+                <label for="ville">Ville :</label>
+                <input type="text" id="ville" name="ville" class="form-input-admin" required>
+            </div>
+
+            <div class="form-group-admin">
+                <label for="role">Rôle :</label>
+                <select id="role" name="role" class="form-input-admin">
+                    <option value="0">Utilisateur</option>
+                    <option value="1">Admin</option>
+                </select>
+            </div>
+
+            <div class="form-group-admin">
+                <button type="submit">Modifier</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</div>
+
+<?php $scripts = ["admin/searchUser", "admin/addUser", "modals", "formSub", "admin/updateUser"]; ?>

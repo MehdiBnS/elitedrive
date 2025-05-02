@@ -127,18 +127,15 @@ class UtilisateurController extends Controller
             $mot_de_passe = $_POST['password'];
 
             $utilisateurModel = new UtilisateurModel();
-            $utilisateur = $utilisateurModel->connect($email, $mot_de_passe); // Connexion de l'utilisateur
+            $utilisateur = $utilisateurModel->connect($email, $mot_de_passe); 
 
             if ($utilisateur) {
-                // Si la connexion est réussie, créer la session utilisateur
                 $_SESSION['id_utilisateur'] = $utilisateur->id_utilisateur;
                 $_SESSION['email'] = $utilisateur->email;
                 $_SESSION['role'] = $utilisateur->role;
                 $_SESSION['nom'] = $utilisateur->nom;
                 $_SESSION['prenom'] = $utilisateur->prenom;
                 $_SESSION['ville'] = $utilisateur->ville;
-
-                // Redirection selon le rôle de l'utilisateur
                 if ($_SESSION['role'] == 1) {
                     header('Location: index.php?controller=Admin&action=backoffice');
                 } else {
@@ -323,7 +320,6 @@ class UtilisateurController extends Controller
             $utilisateur = $utilisateurModel->displayOne($id_utilisateur);
 
             if (password_verify($current_password, $utilisateur->mot_de_passe)) {
-                // Vérification des critères de sécurité du mot de passe
                 if (strlen($new_password) < 8) {
                     $_SESSION['message'] = "Le mot de passe doit contenir au moins 8 caractères.";
                 } elseif (!preg_match('/[A-Z]/', $new_password) || !preg_match('/[a-z]/', $new_password)) {
@@ -333,7 +329,6 @@ class UtilisateurController extends Controller
                 } elseif (!preg_match('/[@$!%*?&]/', $new_password)) {
                     $_SESSION['message'] = "Le mot de passe doit contenir au moins un symbole spécial (@$!%*?&).";
                 } else {
-                    // Si le nouveau mot de passe est valide, le mettre à jour
                     $mot_de_passe_hash = password_hash($new_password, PASSWORD_DEFAULT);
                     if ($utilisateurModel->updatePassword($id_utilisateur, $mot_de_passe_hash)) {
                         $_SESSION['message'] = "Mot de passe mis à jour avec succès.";

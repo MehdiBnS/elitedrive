@@ -9,11 +9,13 @@ form.addEventListener('submit', function (event) {
 
     const emailValue = emailInput.value;
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    const loadingContainer = document.querySelector(".loading-container");
 
     if (!emailValue || !emailPattern.test(emailValue)) {
         console.log("Email invalide ou vide");
         errorMessage.style.display = 'block';
     } else {
+        loadingContainer.style.display = "flex";
         errorMessage.style.display = 'none'; 
         const formData = new FormData();
         formData.append('email', emailValue);
@@ -23,14 +25,18 @@ form.addEventListener('submit', function (event) {
         })
             .then(response => response.json())
             .then(data => {
+                loadingContainer.style.display = "none";
                 if (data.status === 'success') {
-                    alert('Formulaire soumis avec succès !');
+                    errorMessage.textContent = "Inscription réussie !";
+                    errorMessage.style.color = "green";
+                    errorMessage.style.display = 'block';
                     emailInput.value = ''; 
                 } else {
                     alert('Erreur lors de l\'envoi du mail');
                 }
             })
             .catch(error => {
+                loadingContainer.style.display = "none";
                 console.error('Erreur:', error);
                 alert('Une erreur est survenue lors de la soumission.');
             });

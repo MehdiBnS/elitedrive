@@ -367,7 +367,96 @@
         width: 93%;
     }
 
+    .avis-item .stars svg {
+        width: 15px;
+        height: 15px;
+        display: inline;
+    }
+    .avis-item {
+        width: 80%;
+    }
 
+    /* createForm (demande de reservation) */
 
+    /*createFrom (demande de reservation)*/
+.form-reservation-container h1 {
+    font-size: 25px;
+    font-weight: 600;
+    color: darkgoldenrod;
 
+}
+
+.form-reservation-container h2 {
+    font-size: 15px;
+    font-weight: 500;
+    color: white;
+}
+
+.form-reservation-container p {
+    font-style: italic;
+    color: lightgray;
+
+}
+
+.infos-demande-reserve {
+    padding: 10px;
+
+}
+
+.form-reservation-columns {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+}
+
+.form-reservation-left, .form-reservation-right {
+    max-width: 80%;
+}
+.form-reservation-demande button {
+    width: 80%;
+}
+.title-demande {
+    display: block;
+    border-bottom: solid 1px lightgray;
+    padding-bottom: 10px;
+
+}
+
+/* showProfile */
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-info {
+    width: 95%;
+    padding-bottom: 20px;
+}
+
+.accordions-container {
+    width: 100%;
+    padding: 10px;
+    
+}
+.form-user {
+    margin-left: 50px;
+    margin-right: 50px;
+    width: 80%;
+}
+.accordion-header {
+    width: 100%;
+    padding: 10px;
+    gap: 10px;
+}
+.accordion-item {
+
+    padding: 10px;
+    gap: 10px;
+}
+.accordion-content {
+  padding: 40px;
+
+}
 }

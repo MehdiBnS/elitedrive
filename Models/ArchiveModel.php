@@ -58,7 +58,7 @@ class ArchiveModel extends DbConnect
             $this->request->bindValue(':montant', $archive->getMontant(), PDO::PARAM_STR);
             $this->request->bindValue(':date', $archive->getDate(), PDO::PARAM_STR);
 
-            $this->request->execute();
+            return $this->request->execute();
         } catch (Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }

@@ -25,7 +25,7 @@ class Demande_ReservationModel extends DbConnect
     {
         try {
             $this->request = $this->connection->prepare("SELECT dr.*, u.nom, u.prenom, u.email, u.numero_telephone, u.ville, v.nom AS nom_vehicule, v.statut AS statut_vehicule, v.photo FROM demande_reservation dr
-                                                        INNER JOIN utilisateur u ON dr.id_utilisateur = u.id_utilisateur INNER JOIN vehicule v ON dr.id_vehicule = v.id_vehicule WHERE id_demande_reservation = :id_demande");
+                                                        LEFT JOIN utilisateur u ON dr.id_utilisateur = u.id_utilisateur LEFT JOIN vehicule v ON dr.id_vehicule = v.id_vehicule WHERE id_demande_reservation = :id_demande");
             $this->request->bindValue(':id_demande', $id_demande, PDO::PARAM_INT);
             $this->request->execute();
             return $this->request->fetch(PDO::FETCH_OBJ);

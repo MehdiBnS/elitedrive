@@ -32,3 +32,4 @@
 
     <a href="index.php?controller=Utilisateur&action=showProfile">Annuler</a>
 </div>
+<?php $scripts = ["formSub"]; ?>

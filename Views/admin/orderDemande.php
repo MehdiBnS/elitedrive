@@ -21,7 +21,13 @@
                 </a>
             </form>
         </div>
-        <table>
+        <p style="color: red;"><?php if (isset($_SESSION['message'])) {
+                echo $_SESSION['message'];
+                 unset($_SESSION['message']); 
+            } else {
+                echo '';
+            } ?></p>
+        <table id="demandeTable">
             <thead>
                 <tr>
                     <th>Véhicule</th>
@@ -36,13 +42,17 @@
             <tbody>
                 <?php foreach ($demandes as $demande): ?>
                     <tr>
-                        <td><?= htmlspecialchars($demande->nom) ?></td>
+                        <td> <?php if ($demande->nom != null) : ?>
+                                <?= htmlspecialchars($demande->nom) ?>
+                            <?php else : ?>
+                                Véhicule supprimer
+                            <?php endif; ?></td>
                         <td><?= htmlspecialchars($demande->montant) ?> €</td>
                         <td><?= htmlspecialchars($demande->forfait) ?></td>
                         <td><?= htmlspecialchars($demande->date_debut) ?> au <?= htmlspecialchars($demande->date_fin) ?></td>
                         <td><?= htmlspecialchars($demande->statut) ?></td>
                         <td><?= htmlspecialchars($demande->date_creation) ?></td>
-                        <td><a href="index.php?controller=Admin&action=orderDemandeOne&id_demande=<?= htmlspecialchars($demande->id_demande_reservation) ?>">Afficher</a></td>
+                        <td><a href="index.php?controller=Admin&action=orderDemandeOne&id_demande=<?= $demande->id_demande_reservation ?>">Afficher</a></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -54,3 +64,5 @@
         <a href="index.php?controller=Admin&action=orderDemande" style="margin-left: 10px;">Retourner à toute les demandes</a>
     </div>
 <?php endif; ?>
+
+<?php $scripts = ["admin/searchDemande"]; ?>

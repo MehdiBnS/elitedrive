@@ -20,7 +20,7 @@
                 </a>
             </form>
         </div>
-        <table>
+        <table id="avisTable">
             <tr>
                 <th>ID</th>
                 <th>Utilisateur</th>
@@ -54,3 +54,4 @@
         Aucun avis trouvé.
     </div>
 <?php endif; ?>
+<?php $scripts = ["admin/searchAvis"]; ?>

@@ -2,25 +2,25 @@
     <div class="order-admin">
         <h1 style="color: black;">Réservations</h1>
         <div class="navbar-admin">
-        <div class="order-admin-button">
-    <a href="index.php?controller=Admin&action=backOffice">Retour</a>
-</div>
-        <form method="post" action="index.php?controller=Admin&action=orderReservations" class="filter-form">
-            <input type="text" name="search" placeholder="Rechercher une réservation" value="<?= htmlspecialchars($search ?? '') ?>">
-            <button type="submit" class="filter-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                </svg>
-            </button>
-            <a href="index.php?controller=Admin&action=orderReservations" style="margin-left: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
-                    <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
-                </svg>
-            </a>
-        </form>
+            <div class="order-admin-button">
+                <a href="index.php?controller=Admin&action=backOffice">Retour</a>
+            </div>
+            <form method="post" action="index.php?controller=Admin&action=orderReservations" class="filter-form">
+                <input type="text" name="search" placeholder="Rechercher une réservation" value="<?= htmlspecialchars($search ?? '') ?>">
+                <button type="submit" class="filter-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                    </svg>
+                </button>
+                <a href="index.php?controller=Admin&action=orderReservations" style="margin-left: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
+                        <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
+                    </svg>
+                </a>
+            </form>
         </div>
-        <table>
+        <table id="reserveTable">
             <thead>
                 <tr>
                     <th>Nom</th>
@@ -52,7 +52,8 @@
                         <td><?= htmlspecialchars($reservation->forfait) ?></td>
                         <td><?= htmlspecialchars($reservation->date_debut) ?> au <?= htmlspecialchars($reservation->date_fin) ?></td>
                         <td>
-                            <form method="post" action="index.php?controller=Admin&action=createArchive">
+                            <form method="post" action="index.php?controller=Admin&action=createArchive" class="archive-form">
+
                                 <input type="hidden" name="nom" value="<?= htmlspecialchars($reservation->nom) ?>">
                                 <input type="hidden" name="prenom" value="<?= htmlspecialchars($reservation->prenom) ?>">
                                 <input type="hidden" name="email" value="<?= htmlspecialchars($reservation->email) ?>">
@@ -64,7 +65,8 @@
                                 <input type="hidden" name="categorie_vehicule" value="<?= htmlspecialchars($reservation->categorie_nom) ?>">
                                 <input type="hidden" name="montant" value="<?= htmlspecialchars($reservation->montant) ?>">
                                 <input type="hidden" name="date" value="<?= htmlspecialchars($reservation->date_debut) ?>">
-                                <button type="submit">Archiver</button>
+                                <button type="submit" class="archive-btn">Archiver</button>
+
                             </form>
                         </td>
                     </tr>
@@ -78,3 +80,4 @@
     </div>
 <?php endif; ?>
 
+<?php $scripts = ["admin/searchReservation", "admin/setArchiveAdd"]; ?>

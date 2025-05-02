@@ -117,7 +117,7 @@
                                 }
                                 ?>
                             </div>
-                            <p>Commentaire : <?= nl2br(htmlspecialchars(empty($a->commentaire) ? 'Avis sans message' : $a->commentaire)) ?></p>
+                            <span style="color: white;">Commentaire : <?= nl2br(htmlspecialchars(empty($a->commentaire) ? 'Avis sans message' : $a->commentaire)) ?></span>
 
                             <?php if (
                                 isset($_SESSION['id_utilisateur']) &&
@@ -195,3 +195,4 @@
         <?php endif; ?>
     </div>
 </section>
+<?php $scripts = ["Ajax/avisUpdate", "Ajax/avisAjax", "Ajax/deleteAvis"]; ?>

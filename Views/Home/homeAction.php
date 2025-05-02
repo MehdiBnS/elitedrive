@@ -143,3 +143,5 @@
         <button class="next">&#10095;</button>
     </div>
 </div>
+
+<?php $scripts = ["caroussel", "mailVerif"]; ?>

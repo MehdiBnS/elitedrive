@@ -20,20 +20,22 @@
     <p><a href="index.php?controller=Home&action=contactAction" class="footer-contact">Formulaire de contact</a></p>
   </div>
 </footer>
-<script src="../public/js/caroussel.js"></script>
-<script src="../public/js/mailVerif.js"></script>
+<?php
+if (isset($scripts)) {
+    foreach ($scripts as $script) {
+        // Si le nom contient un /, cela veut dire qu'on a précisé un sous-dossier
+        if (strpos($script, '/') !== false) {
+            echo '<script src="js/' . $script . '.js"></script>';
+        } else {
+            // Sinon, par défaut on charge à la racine du dossier js/
+            echo '<script src="js/' . $script . '.js"></script>';
+        }
+    }
+}
+?>
 <script src="../public/js/burger.js"></script>
-<script src="../public/js/formVerif.js"></script>
-<script src="../public/js/accordeonsMenu.js"></script>
-<script src="../public/js/formSub.js"></script> 
-<script src="../public/js/modals.js"></script> 
-<script src="../public/js/avisStar.js"></script> 
-<script src="../public/js/calculPrixDr.js"></script>
-<script src="../public/js/Ajax/avisAjax.js"></script>
-<script src="../public/js/Admin/formAdmin.js"></script>
-<script src="../public/js/Ajax/searchFilter.js"></script>
-<script src="../public/js/Ajax/avisUpdate.js"></script>
-<script src="../public/js/filterCarMenu.js"></script>
+<script src="../public/js/loadPage.js"></script>
+
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 

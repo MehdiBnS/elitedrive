@@ -21,6 +21,7 @@
 
             <div class="form-reservation-columns">
                 <!-- Bloc 1 : Infos utilisateur et véhicule -->
+                <h1 class="title-demande">Vos informations</h1>
                 <div class="form-reservation-left">
                     <div class="form-reservation-demande">
                         <label for="nom">Nom :</label>
@@ -64,7 +65,7 @@
                     </div>
                 </div>
 
-                <!-- Bloc 2 : Détails de réservation -->
+                <h1 class="title-demande">Détails</h1>
                 <div class="form-reservation-right">
                     <div class="form-reservation-demande">
                         <label for="date_debut">*Date de début :</label>
@@ -109,3 +110,4 @@
         </form>
     </div>
 </section>
+<?php $scripts = ["calculPrixDr"]; ?>

@@ -56,49 +56,23 @@ function generateStars(rating) {
     }
     return starsHtml;
 }
+document.querySelectorAll('.star').forEach(star => {
+    star.addEventListener('click', function () {
+        const rating = this.getAttribute('data-value');
+        document.getElementById('rate').value = rating;
 
-
-document.querySelectorAll('.supprimer').forEach(function (button) {
-    button.addEventListener('click', function (event) {
-        event.preventDefault();
-
-        const idAvis = this.dataset.idAvis;
-        const idUtilisateur = this.dataset.idUtilisateur;
-
-        let url;
-        let data;
-
-        if (idUtilisateur) {
-            url = 'index.php?controller=Avis&action=delete&id_utilisateur=' + idUtilisateur + '&id_avis=' + idAvis;
-            data = new FormData();
-            data.append('id_utilisateur', idUtilisateur);
-            data.append('id_avis', idAvis);
-        } else if (idAvis) {
-            url = 'index.php?controller=Avis&action=delete&id_avis=' + idAvis;
-            data = new FormData();
-            data.append('id_avis', idAvis);
-        }
-
-        fetch(url, {
-            method: 'POST',
-            body: data
-        })
-            .then(response => response.json())
-            .then(responseData => {
-                const messageContainer = document.getElementById('messageContainer'); // Récupère la div où afficher le message
-                if (responseData.status === 'success') {
-                    messageContainer.innerHTML = `<p style="color: green;">${responseData.message}</p>`;
-                    const avisItem = button.closest('.avis-item');
-                    avisItem.remove();
-                } else {
-                    messageContainer.innerHTML = `<p style="color: red;">${responseData.message}</p>`;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Une erreur est survenue.');
-            });
+        // Mettre à jour l'apparence des étoiles (colorier jusqu'à celle cliquée)
+        document.querySelectorAll('.star').forEach(s => {
+            const value = parseInt(s.getAttribute('data-value'));
+            if (value <= rating) {
+                s.querySelector('svg').setAttribute('fill', 'darkgoldenrod');
+            } else {
+                s.querySelector('svg').setAttribute('fill', 'grey');
+            }
+        });
     });
 });
+
+
 
 

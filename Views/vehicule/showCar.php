@@ -293,3 +293,4 @@
 
 
 </section>
+<?php $scripts = ["Ajax/searchFilter", "filterCarMenu"]; ?>

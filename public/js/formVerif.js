@@ -4,14 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             let isValid = true;
 
-            // Reset all error messages
             form.querySelectorAll(".error-message-contact").forEach(error => error.textContent = "");
             const validMessage = form.querySelector(".valid-message-contact");
+            const loadingContainer = document.querySelector(".loading-container");
             validMessage.textContent = "";
 
-            // Loop through each form input to validate
             form.querySelectorAll(".form-input-contact").forEach(input => {
-                const errorSpan = input.nextElementSibling; // Get the next span (error message)
+                const errorSpan = input.nextElementSibling;
 
                 if (!input.value.trim()) {
                     errorSpan.textContent = `Le champ ${input.name} est requis.`;
@@ -22,30 +21,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            // If the form is valid, send it via fetch
             if (isValid) {
-                const formData = new FormData(form);
+                loadingContainer.style.display = "flex";
 
-                // Define the URL to send the request to
+                const formData = new FormData(form);
                 const url = 'index.php?controller=Contact&action=contactUtilisateur';
 
-                // Send the form data via AJAX using fetch
                 fetch(url, {
                     method: 'POST',
-                    body: formData // FormData will include all form fields
+                    body: formData
                 })
-                    .then(response => response.json()) // Parse the JSON response
+                    .then(response => response.json())
                     .then(data => {
+                        loadingContainer.style.display = "none";
                         if (data.status === 'success') {
-                            validMessage.textContent = data.message; // Display success message
+                            validMessage.textContent = data.message;
                             validMessage.style.color = "green";
-                            form.reset(); // Reset form fields after successful submission
+                            form.reset();
                         } else {
-                            validMessage.textContent = data.message; // Display error message
+                            validMessage.textContent = data.message;
                             validMessage.style.color = "red";
                         }
                     })
                     .catch(error => {
+                        loadingContainer.style.display = "none";
                         validMessage.textContent = "Une erreur est survenue lors de l'envoi du formulaire.";
                         validMessage.style.color = "red";
                         console.error("Erreur AJAX:", error);

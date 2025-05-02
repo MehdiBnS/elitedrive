@@ -3,8 +3,12 @@
     <div class="container-admin-one">
         <h1>Demande de réservation:
             <?php echo htmlspecialchars($demande->id_demande_reservation); ?> -
+            <?php if ($demande->nom != null && $demande->prenom != null) : ?>
             <?php echo htmlspecialchars($demande->nom); ?>
             <?php echo htmlspecialchars($demande->prenom); ?>
+            <?php else : ?>
+                Utilisateur supprimer
+            <?php endif; ?>
         </h1>
 
         <?php if ($demande): ?>

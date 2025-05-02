@@ -40,3 +40,4 @@
             </div>
     </form>
 </div>
+<?php $scripts = ["formSub"]; ?>

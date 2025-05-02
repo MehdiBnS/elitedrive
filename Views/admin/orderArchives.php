@@ -24,7 +24,7 @@
 
             </div>
         </div>
-        <table>
+        <table id="archiveTable">
             <tr>
                 <th>ID</th>
                 <th>Nom</th>
@@ -66,3 +66,5 @@
         <p>Aucune archive trouvée.</p>
     </div>
 <?php endif; ?>
+
+<?php $scripts = ["admin/searchArchive"]; ?>

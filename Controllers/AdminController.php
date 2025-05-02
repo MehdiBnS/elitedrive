@@ -116,15 +116,25 @@ class AdminController extends Controller
                 $utilisateur->setVille($ville);
                 $utilisateur->setRole($role);
                 $utilisateurModel = new UtilisateurModel();
-                $utilisateurModel->create($utilisateur);
-
-                $_SESSION['message'] = 'Utilisateur créé avec succès.';
-                header('Location: index.php?controller=Admin&action=orderUsers');
-                exit();
+                if ($utilisateurModel->create($utilisateur)) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Utilisateur ajouté avec succès.'
+                    ]);
+                    exit();
+                } else {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Erreur lors de l\'ajout de l\'utilisateur.'
+                    ]);
+                    exit();
+                }
             }
         } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Accès refusé.'
+            ]);
             exit();
         }
     }
@@ -242,9 +252,10 @@ class AdminController extends Controller
                 $id_vehicule = $_GET['id_vehicule'];
                 $vehiculeModel = new VehiculeModel();
                 $vehicule = $vehiculeModel->displayOne($id_vehicule);
+                $options = $vehiculeModel->displayOptions();
 
-                if ($vehicule) {
-                    $this->render('admin/orderCarOne', ['vehicule' => $vehicule]);
+                if ($vehicule && $options) {
+                    $this->render('admin/orderCarOne', ['vehicule' => $vehicule, 'options' => $options]);
                 } else {
                     $_SESSION['message'] = "Véhicule introuvable.";
                     header('Location: index.php?controller=Admin&action=orderCars');
@@ -332,16 +343,24 @@ class AdminController extends Controller
 
                 $vehiculeModel = new VehiculeModel();
                 if ($vehiculeModel->create($vehicule)) {
-                    $_SESSION['message'] = "Véhicule ajouté avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderCars');
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Véhicule ajouté avec succès.'
+                    ]);
                     exit();
                 } else {
-                    $_SESSION['message'] = "Erreur lors de l'ajout du véhicule.";
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Erreur lors de l\'ajout du véhicule.'
+                    ]);
+                    exit();
                 }
             }
         } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Accès refusé.'
+            ]);
             exit();
         }
     }
@@ -501,8 +520,8 @@ class AdminController extends Controller
             $archiveModel = new ArchiveModel();
             $search = isset($_POST['search']) ? trim($_POST['search']) : '';
             $archives = !empty($search)
-            ? $archiveModel->search($search)
-            : $archiveModel->displayAll();
+                ? $archiveModel->search($search)
+                : $archiveModel->displayAll();
 
             $this->render('admin/orderArchives', ['archives' => $archives]);
         } else {
@@ -541,48 +560,40 @@ class AdminController extends Controller
 
     public function createArchive()
     {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $nom = $_POST['nom'];
-                $prenom = $_POST['prenom'];
-                $numero_telephone = $_POST['numero_telephone'];
-                $ville = $_POST['ville'];
-                $email = $_POST['email'];
-                $nom_vehicule = $_POST['nom_vehicule'];
-                $modele = $_POST['modele'];
-                $marque = $_POST['marque'];
-                $categorie_vehicule = $_POST['categorie_vehicule'];
-                $montant = $_POST['montant'];
-                $date = $_POST['date'];
-                $archive = new Archive();
-                $archive->setNom($nom);
-                $archive->setPrenom($prenom);
-                $archive->setNumero_telephone($numero_telephone);
-                $archive->setVille($ville);
-                $archive->setEmail($email);
-                $archive->setNom_vehicule($nom_vehicule);
-                $archive->setModele($modele);
-                $archive->setMarque($marque);
-                $archive->setCategorie_vehicule($categorie_vehicule);
-                $archive->setMontant($montant);
-                $archive->setDate($date);
-                $archiveModel = new ArchiveModel();
-                if ($archiveModel->create($archive)) {
-                    $_SESSION['message'] = "Archive créée avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderReservations');
-                    exit();
-                } else {
-                    $_SESSION['message'] = "Erreur lors de la création de l'archive.";
-                    header('Location: index.php?controller=Admin&action=orderReservations');
-                    exit();
-                }
-            } else {
-                $_SESSION['message'] = "Accès refusé.";
-                header('Location: index.php');
-                exit();
-            }
+        if (!isset($_SESSION['id_utilisateur']) || $_SESSION['role'] != 1) {
+            echo "Accès refusé.";
+            exit();
         }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo "Méthode non autorisée.";
+            exit();
+        }
+
+        $archive = new Archive();
+        $archive->setNom($_POST['nom']);
+        $archive->setPrenom($_POST['prenom']);
+        $archive->setNumero_telephone($_POST['numero_telephone']);
+        $archive->setVille($_POST['ville']);
+        $archive->setEmail($_POST['email']);
+        $archive->setNom_vehicule($_POST['nom_vehicule']);
+        $archive->setModele($_POST['modele']);
+        $archive->setMarque($_POST['marque']);
+        $archive->setCategorie_vehicule($_POST['categorie_vehicule']);
+        $archive->setMontant($_POST['montant']);
+        $archive->setDate($_POST['date']);
+
+        $archiveModel = new ArchiveModel();
+
+        if ($archiveModel->create($archive)) {
+            echo "Archive créée";
+        } else {
+            echo "Erreur lors de l'archivage";
+        }
+
+        exit();
     }
+
 
     public function deleteArchive()
     {
@@ -696,7 +707,6 @@ class AdminController extends Controller
 
     public function orderOptions()
     {
-        // Vérification que l'utilisateur est bien un administrateur
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $vehiculeModel = new VehiculeModel();
             $options = $vehiculeModel->displayOptions();
@@ -709,7 +719,6 @@ class AdminController extends Controller
         }
     }
 
-    // Afficher une catégorie en particulier
     public function orderOneCategory()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -755,43 +764,58 @@ class AdminController extends Controller
                     $fileSize = $photo['size'];
 
                     if (!in_array($fileExtension, $allowedExtensions)) {
-                        $_SESSION['message'] = "Format d'image non autorisé. Formats acceptés : JPG, PNG, GIF.";
-                        header('Location: index.php?controller=Admin&action=orderOptions');
+                        echo json_encode([
+                            'success' => false,
+                            'message' => "Format d'image non autorisé. Formats acceptés : JPG, PNG, GIF."
+                        ]);
                         exit();
                     }
 
                     if ($fileSize > $maxSize) {
-                        $_SESSION['message'] = "L'image dépasse la taille maximale de 5MB.";
-                        header('Location: index.php?controller=Admin&action=orderOptions');
+                        echo json_encode([
+                            'success' => false,
+                            'message' => "L'image dépasse la taille maximale de 5MB."
+                        ]);
                         exit();
                     }
-
                     $fileName = time() . "_" . bin2hex(random_bytes(5)) . "." . $fileExtension;
                     $filePath = "./uploads/photos/" . $fileName;
 
                     if (move_uploaded_file($photo['tmp_name'], $filePath)) {
                         $categorie->setPhoto($filePath);
                     } else {
-                        $_SESSION['message'] = "Erreur lors de l'upload de l'image.";
-                        header('Location: index.php?controller=Admin&action=orderOptions');
+                        echo json_encode([
+                            'success' => false,
+                            'message' => "Erreur lors de l'upload de l'image."
+                        ]);
                         exit();
                     }
                 }
+
                 $categorieModel = new CategorieModel();
                 if ($categorieModel->create($categorie)) {
-                    $_SESSION['message'] = "Catégorie créée avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => true,
+                        'message' => "Catégorie créée avec succès."
+                    ]);
                 } else {
-                    $_SESSION['message'] = "Erreur lors de la création de la catégorie.";
+
+                    echo json_encode([
+                        'success' => false,
+                        'message' => "Erreur lors de la création de la catégorie."
+                    ]);
                 }
+                exit();
             }
         } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
+            echo json_encode([
+                'success' => false,
+                'message' => "Accès refusé."
+            ]);
             exit();
         }
     }
+
 
     public function updateCategoryForm()
     {
@@ -902,8 +926,6 @@ class AdminController extends Controller
         }
     }
     // Afficher tous les modèles
-
-    // Afficher un modèle en particulier
     public function orderOneModeles()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -941,18 +963,23 @@ class AdminController extends Controller
                 $modele->setNom($nom);
                 $modeleModel = new ModeleModel();
                 if ($modeleModel->create($modele)) {
-                    $_SESSION['message'] = "Modèle créé avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => true,
+                        'message' => "Modèle créée avec succès."
+                    ]);
                 } else {
-                    $_SESSION['message'] = "Erreur lors de la création du modèle.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => false,
+                        'message' => "Erreur lors de la création du modèle."
+                    ]);
                 }
+                exit();
             }
         } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
+            echo json_encode([
+                'success' => false,
+                'message' => "Accès refusé."
+            ]);
             exit();
         }
     }
@@ -1026,7 +1053,6 @@ class AdminController extends Controller
     }
     // Afficher toutes les marques
 
-    // Afficher une marque en particulier
     public function orderOneMarque()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1063,18 +1089,23 @@ class AdminController extends Controller
                 $marque->setNom($nom);
                 $marqueModel = new MarqueModel();
                 if ($marqueModel->create($marque)) {
-                    $_SESSION['message'] = "Marque créée avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => true,
+                        'message' => "Marque créée avec succès."
+                    ]);
                 } else {
-                    $_SESSION['message'] = "Erreur lors de la création de la marque.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => false,
+                        'message' => "Erreur lors de la création de la marque."
+                    ]);
                 }
+                exit();
             }
         } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
+            echo json_encode([
+                'success' => false,
+                'message' => "Accès refusé."
+            ]);
             exit();
         }
     }
@@ -1156,7 +1187,8 @@ class AdminController extends Controller
         }
     }
 
-    // Afficher un carburant spécifique
+
+
     public function orderOneCarburant()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1184,7 +1216,6 @@ class AdminController extends Controller
         }
     }
 
-    // Créer un carburant
     public function createCarburant()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1194,18 +1225,23 @@ class AdminController extends Controller
                 $carburant->setType($type);
                 $carburantModel = new CarburantModel();
                 if ($carburantModel->create($carburant)) {
-                    $_SESSION['message'] = "Carburant créé avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => true,
+                        'message' => "Carburant créé avec succès."
+                    ]);
                 } else {
-                    $_SESSION['message'] = "Erreur lors de la création du carburant.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => false,
+                        'message' => "Erreur lors de la création du carburant."
+                    ]);
                 }
+                exit();
             }
         } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
+            echo json_encode([
+                'success' => false,
+                'message' => "Accès refusé."
+            ]);
             exit();
         }
     }
@@ -1281,7 +1317,6 @@ class AdminController extends Controller
     }
 
 
-    // Afficher une transmission spécifique
     public function orderOneTransmission()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1319,18 +1354,23 @@ class AdminController extends Controller
                 $transmission->setType($type);
                 $transmissionModel = new TransmissionModel();
                 if ($transmissionModel->create($transmission)) {
-                    $_SESSION['message'] = "Transmission créée avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => true,
+                        'message' => "Transmission créée avec succès.",
+                    ]);
                 } else {
-                    $_SESSION['message'] = "Erreur lors de la création de la transmission.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => false,
+                        'message' => "Erreur lors de la création de la transmission."
+                    ]);
                 }
+                exit();
             }
         } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
+            echo json_encode([
+                'success' => false,
+                'message' => "Accès refusé."
+            ]);
             exit();
         }
     }
@@ -1403,8 +1443,6 @@ class AdminController extends Controller
         }
     }
 
-
-    // Afficher une place spécifique
     public function orderOnePlace()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1432,7 +1470,6 @@ class AdminController extends Controller
         }
     }
 
-    // Créer une place
     public function createPlaces()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1442,18 +1479,23 @@ class AdminController extends Controller
                 $place->setNombre($nombre);
                 $placesModel = new PlacesModel();
                 if ($placesModel->create($place)) {
-                    $_SESSION['message'] = "Place créée avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => true,
+                        'message' => "Place créée avec succès.",
+                    ]);
                 } else {
-                    $_SESSION['message'] = "Erreur lors de la création de la place.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => false,
+                        'message' => "Erreur lors de la création du nombre de place."
+                    ]);
                 }
+                exit();
             }
         } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
+            echo json_encode([
+                'success' => false,
+                'message' => "Accès refusé."
+            ]);
             exit();
         }
     }
@@ -1501,14 +1543,11 @@ class AdminController extends Controller
     }
 
 
-    // Supprimer une place
     public function deletePlaces()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_places']) && !empty($_GET['id_places'])) {
                 $id_places = $_GET['id_places'];
-
-                // Récupérer la place en base de données
                 $placesModel = new PlacesModel();
                 $place = $placesModel->displayOne($id_places);
 
@@ -1517,8 +1556,6 @@ class AdminController extends Controller
                     header('Location: index.php?controller=Admin&action=orderOptions');
                     exit();
                 }
-
-                // Supprimer la place en base de données
                 if ($placesModel->delete($id_places)) {
                     $_SESSION['message'] = "Place supprimée avec succès.";
                 } else {
@@ -1539,7 +1576,6 @@ class AdminController extends Controller
         }
     }
 
-    // Afficher une couleur spécifique
     public function orderOneCouleur()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1567,7 +1603,6 @@ class AdminController extends Controller
         }
     }
 
-    // Créer une couleur
     public function createCouleur()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1577,21 +1612,27 @@ class AdminController extends Controller
                 $couleur->setNom($nom);
                 $couleurModel = new CouleurModel();
                 if ($couleurModel->create($couleur)) {
-                    $_SESSION['message'] = "Couleur créée avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => true,
+                        'message' => "Couleur créée avec succès."
+                    ]);
                 } else {
-                    $_SESSION['message'] = "Erreur lors de la création de la couleur.";
-                    header('Location: index.php?controller=Admin&action=orderOptions');
-                    exit();
+                    echo json_encode([
+                        'success' => false,
+                        'message' => "Erreur lors de la création de la couleur."
+                    ]);
                 }
+                exit();
             }
         } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
+            echo json_encode([
+                'success' => false,
+                'message' => "Accès refusé."
+            ]);
             exit();
         }
     }
+
 
     public function updateCouleurForm()
     {
@@ -1661,10 +1702,8 @@ class AdminController extends Controller
         }
     }
 
-    // Afficher toutes les demandes de réservation
     public function orderDemande()
     {
-        // Vérification que l'utilisateur est bien un administrateur
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $demandeReservationModel = new Demande_ReservationModel();
 
@@ -1681,35 +1720,30 @@ class AdminController extends Controller
         }
     }
 
-    // Afficher une demande de réservation spécifique
+
     public function orderDemandeOne()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (!isset($_GET['id_demande'])) {
-                $_SESSION['message'] = "Aucune demande sélectionnée.";
-                header('Location: index.php?controller=Admin&action=orderDemande');
+
+            if (isset($_GET['id_demande']) && !empty($_GET['id_demande'])) {
+                $id_demande = filter_var($_GET['id_demande'], FILTER_VALIDATE_INT);
+                $demandeReservationModel = new Demande_ReservationModel();
+                $demande = $demandeReservationModel->displayOne($id_demande);
+
+                if (!$demande) {
+                    $_SESSION['message'] = "Demande introuvable.";
+                    header('Location: index.php?controller=Admin&action=orderDemande');
+                    exit();
+                }
+
+                $this->render('admin/orderDemandeOne', ['demande' => $demande]);
+            } else {
+                $_SESSION['message'] = "Accès refusé.";
+                header('Location: index.php');
                 exit();
             }
-
-            $id_demande = filter_var($_GET['id_demande'], FILTER_VALIDATE_INT);
-            $demandeReservationModel = new Demande_ReservationModel();
-            $demande = $demandeReservationModel->displayOne($id_demande);
-
-            if (!$demande) {
-                $_SESSION['message'] = "Demande introuvable.";
-                header('Location: index.php?controller=Admin&action=orderDemande');
-                exit();
-            }
-
-            $this->render('admin/orderDemandeOne', ['demande' => $demande]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
         }
     }
-
-    // Créer une demande de réservation (si besoin)
     public function createDemande()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1722,8 +1756,6 @@ class AdminController extends Controller
                 $forfait = htmlspecialchars(trim($_POST['forfait']));
                 $id_utilisateur = intval($_POST['id_utilisateur']);
                 $id_vehicule = intval($_POST['id_vehicule']);
-
-                // Créer un objet DemandeReservation
                 $demande = new Demande_Reservation();
                 $demande->setMessage($message);
                 $demande->setDate_debut($date_debut);
@@ -1733,8 +1765,6 @@ class AdminController extends Controller
                 $demande->setForfait($forfait);
                 $demande->setId_utilisateur($id_utilisateur);
                 $demande->setId_vehicule($id_vehicule);
-
-                // Enregistrer la demande
                 $demandeReservationModel = new Demande_ReservationModel();
                 if ($demandeReservationModel->create($demande)) {
                     $_SESSION['message'] = "Demande de réservation créée avec succès.";
@@ -1851,17 +1881,11 @@ class AdminController extends Controller
     }
 
 
-
-
-
-    // Supprimer une demande de réservation
     public function deleteDemande()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_demande']) && !empty($_GET['id_demande'])) {
                 $id_demande = $_GET['id_demande_reseid_demandervation'];
-
-                // Récupérer la demande de réservation en base de données
                 $demandeReservationModel = new Demande_ReservationModel();
                 $demande = $demandeReservationModel->displayOne($id_demande);
 
@@ -1870,8 +1894,6 @@ class AdminController extends Controller
                     header('Location: index.php?controller=Admin&action=orderDemande');
                     exit();
                 }
-
-                // Supprimer la demande en base de données
                 if ($demandeReservationModel->delete($id_demande)) {
                     $_SESSION['message'] = "Demande supprimée avec succès.";
                 } else {
@@ -1908,7 +1930,6 @@ class AdminController extends Controller
         }
     }
 
-    // Afficher une réservation spécifique
     public function orderOneReservation()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1936,7 +1957,6 @@ class AdminController extends Controller
         }
     }
 
-    // Créer une nouvelle réservation
     public function createReservation()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1947,8 +1967,6 @@ class AdminController extends Controller
                 $date_debut = htmlspecialchars(trim($_POST['date_debut']));
                 $date_fin = htmlspecialchars(trim($_POST['date_fin']));
                 $forfait = htmlspecialchars(trim($_POST['forfait']));
-
-                // Créer un objet Reservation
                 $reservation = new Reservation();
                 $reservation->setId_utilisateur($id_utilisateur);
                 $reservation->setId_vehicule($id_vehicule);
@@ -1957,7 +1975,6 @@ class AdminController extends Controller
                 $reservation->setDate_fin($date_fin);
                 $reservation->setForfait($forfait);
 
-                // Enregistrer la réservation
                 $reservationModel = new ReservationModel();
                 if ($reservationModel->create($reservation)) {
                     $_SESSION['message'] = "Réservation créée avec succès.";
@@ -1973,15 +1990,11 @@ class AdminController extends Controller
             exit();
         }
     }
-
-    // Mettre à jour une réservation (par exemple, les dates, le montant, etc.)
     public function updateReservation()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_reservation']) && !empty($_GET['id_reservation'])) {
                 $id_reservation = $_GET['id_reservation'];
-
-                // Récupérer la réservation en base de données
                 $reservationModel = new ReservationModel();
                 $reservation = $reservationModel->displayOne($id_reservation);
 
@@ -1990,8 +2003,6 @@ class AdminController extends Controller
                     header('Location: index.php?controller=Admin&action=orderReservations');
                     exit();
                 }
-
-                // Si le formulaire est soumis pour mettre à jour la réservation
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $id_utilisateur = intval($_POST['id_utilisateur']);
                     $id_vehicule = intval($_POST['id_vehicule']);
@@ -1999,16 +2010,12 @@ class AdminController extends Controller
                     $date_debut = htmlspecialchars(trim($_POST['date_debut']));
                     $date_fin = htmlspecialchars(trim($_POST['date_fin']));
                     $forfait = htmlspecialchars(trim($_POST['forfait']));
-
-                    // Créer un objet Reservation
                     $reservation->setId_utilisateur($id_utilisateur);
                     $reservation->setId_vehicule($id_vehicule);
                     $reservation->setMontant($montant);
                     $reservation->setDate_debut($date_debut);
                     $reservation->setDate_fin($date_fin);
                     $reservation->setForfait($forfait);
-
-                    // Mettre à jour la réservation
                     if ($reservationModel->update($reservation)) {
                         $_SESSION['message'] = "Réservation mise à jour avec succès.";
                         header('Location: index.php?controller=Admin&action=orderReservations');
@@ -2017,8 +2024,6 @@ class AdminController extends Controller
                         $_SESSION['message'] = "Erreur lors de la mise à jour de la réservation.";
                     }
                 }
-
-                // Afficher le formulaire de mise à jour avec les données de la réservation
                 $this->render('admin/updateReservation', ['reservation' => $reservation]);
             } else {
                 $_SESSION['message'] = "Réservation introuvable.";
@@ -2032,14 +2037,12 @@ class AdminController extends Controller
         }
     }
 
-    // Supprimer une réservation
     public function deleteReservation()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_reservation']) && !empty($_GET['id_reservation'])) {
                 $id_reservation = $_GET['id_reservation'];
 
-                // Récupérer la réservation en base de données
                 $reservationModel = new ReservationModel();
                 $reservation = $reservationModel->displayOne($id_reservation);
 
@@ -2049,7 +2052,6 @@ class AdminController extends Controller
                     exit();
                 }
 
-                // Supprimer la réservation en base de données
                 if ($reservationModel->delete($id_reservation)) {
                     $_SESSION['message'] = "Réservation supprimée avec succès.";
                 } else {
