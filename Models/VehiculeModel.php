@@ -9,7 +9,6 @@ use elitedrive\Entities\Vehicule;
 
 class VehiculeModel extends DbConnect
 {
-    // Afficher tous les véhicules
     public function displayAll()
     {
         try {
@@ -20,7 +19,6 @@ class VehiculeModel extends DbConnect
         }
     }
 
-    // Afficher un véhicule par son ID
     public function displayOne($id_vehicule)
     {
         try {
@@ -56,7 +54,6 @@ class VehiculeModel extends DbConnect
     public function displayAsc()
     {
         try {
-            // Requête pour afficher les véhicules triés par prix croissant
             $this->request = $this->connection->prepare("SELECT * FROM vehicule ORDER BY prix_km ASC");
             $this->request->execute();
             return $this->request->fetchAll(PDO::FETCH_OBJ);
@@ -67,7 +64,6 @@ class VehiculeModel extends DbConnect
     public function displayDesc()
     {
         try {
-            // Requête pour afficher les véhicules triés par prix décroissant
             $this->request = $this->connection->prepare("SELECT * FROM vehicule ORDER BY prix_km DESC");
             $this->request->execute();
             return $this->request->fetchAll(PDO::FETCH_OBJ);
@@ -98,7 +94,6 @@ class VehiculeModel extends DbConnect
         }
     }
 
-    // Créer un nouveau véhicule
     public function create(Vehicule $vehicule)
     {
         try {
@@ -132,7 +127,6 @@ class VehiculeModel extends DbConnect
         }
     }
 
-    // Mettre à jour un véhicule
     public function update(Vehicule $vehicule)
     {
         try {
@@ -181,7 +175,6 @@ class VehiculeModel extends DbConnect
         }
     }
 
-    // Supprimer un véhicule
     public function delete($id_vehicule)
     {
         try {

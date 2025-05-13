@@ -17,7 +17,6 @@ class Archive
     private $montant;
     private $date;
 
-    // Getter and Setter methods
 
     public function getId_archive()
     {

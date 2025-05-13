@@ -19,7 +19,7 @@
                     <button class="btn-edit-user" data-utilisateur='<?= json_encode($utilisateur) ?>'>
                         Modifier
                     </button>
-                    <a href="index.php?controller=Admin&action=deleteUser&id_utilisateur=<?php echo htmlspecialchars($utilisateur->id_utilisateur); ?>">Supprimer</a>
+                    <a href="index.php?controller=Admin&action=deleteUser&session=<?= $_SESSION['csrf_token']?>&id_utilisateur=<?php echo htmlspecialchars($utilisateur->id_utilisateur); ?>">Supprimer</a>
                     <a href="index.php?controller=Admin&action=orderUsers">Retour</a>
                 </div>
             </div>
@@ -38,6 +38,7 @@
 
             <form method="POST" action="index.php?controller=Admin&action=updateUser" class="form-update-admin">
                 <input type="hidden" id="id_utilisateur" name="id_utilisateur" readonly>
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" readonly>
 
                 <div class="form-group-admin">
                     <label for="nom">Nom :</label>

@@ -207,6 +207,7 @@
                             <input type="hidden" name="id_avis" id="editIdAvis">
                             <input type="hidden" name="id_utilisateur" id="editIdUtilisateur">
                             <input type="hidden" name="id_vehicule" id="editIdVehicule">
+                            <input type="hidden" name="csrf_token" id="editToken" value="<?= $_SESSION['csrf_token'] ?>">
 
                             <button type="submit">Mettre à jour</button>
                         </form>

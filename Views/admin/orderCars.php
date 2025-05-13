@@ -30,20 +30,22 @@
                     <h2>Créer un véhicule</h2>
                     <form id="createCarForm" method="POST" action="index.php?controller=Admin&action=createCar" enctype="multipart/form-data" class="form-cars-create" style="display: flex; flex-direction: row; justify-content:center; align-items: center; justify-content: space-between;">
                         <div style="display: flex; flex-direction: column; gap: 10px;width:100%">
+
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                             <label for="nom">Nom du véhicule :</label>
                             <input type="text" id="nom" name="nom" required readonly>
 
                             <label for="prix_km">Prix au km :</label>
-                            <input type="number" step="0.01" id="prix_km" name="prix_km" required>
+                            <input type="number" step="0.01" id="prix_km" name="prix_km" min="0.01" required>
 
                             <label for="prix_jour">Prix par jour :</label>
-                            <input type="number" step="0.01" id="prix_jour" name="prix_jour" required>
+                            <input type="number" step="0.01" id="prix_jour" name="prix_jour" min="0.01" required>
 
                             <label for="prix_semaine">Prix par semaine :</label>
-                            <input type="number" step="0.01" id="prix_semaine" name="prix_semaine">
+                            <input type="number" step="0.01" id="prix_semaine" name="prix_semaine" min="0.01" required>
 
                             <label for="prix_mois">Prix par mois :</label>
-                            <input type="number" step="0.01" id="prix_mois" name="prix_mois">
+                            <input type="number" step="0.01" id="prix_mois" name="prix_mois" min="0.01" required>
 
                             <label for="annee">Année :</label>
                             <input type="number" id="annee" name="annee" required>
@@ -170,7 +172,7 @@
                                 Pas de photo
                             <?php endif; ?>
                         </td>
-                        <td><a href="index.php?controller=Admin&action=deleteCar&id_vehicule=<?= htmlspecialchars($v->id_vehicule) ?>">Supprimer</a></td>
+                        <td><a href="index.php?controller=Admin&action=deleteCar&session=<?= $_SESSION['csrf_token']?>&id_vehicule=<?= htmlspecialchars($v->id_vehicule) ?>">Supprimer</a></td>
                         <td><button class="btn-edit"
                                 data-vehicule='<?= htmlspecialchars(json_encode($v), ENT_QUOTES, 'UTF-8') ?>'
                                 data-options='<?= htmlspecialchars(json_encode($options), ENT_QUOTES, 'UTF-8') ?>'>
@@ -196,7 +198,7 @@
 
         <form method="POST" action="index.php?controller=Admin&action=updateCar" enctype="multipart/form-data" class="form-update-admin">
             <input type="hidden" id="id_vehicule" name="id_vehicule" readonly>
-
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <div class="form-group-admin">
                 <label for="nom">Nom du véhicule :</label>
                 <input type="text" id="nom" name="nom" class="form-input-admin" required readonly>
@@ -204,22 +206,22 @@
 
             <div class="form-group-admin">
                 <label for="prix_km">Prix au km :</label>
-                <input type="number" step="0.01" id="prix_km" name="prix_km" class="form-input-admin" required>
+                <input type="number" step="0.01" id="prix_km" name="prix_km" class="form-input-admin" min="0.01" required>
             </div>
 
             <div class="form-group-admin">
                 <label for="prix_jour">Prix par jour :</label>
-                <input type="number" step="0.01" id="prix_jour" name="prix_jour" class="form-input-admin" required>
+                <input type="number" step="0.01" id="prix_jour" name="prix_jour" class="form-input-admin" min="0.01" required>
             </div>
 
             <div class="form-group-admin">
                 <label for="prix_semaine">Prix par semaine :</label>
-                <input type="number" step="0.01" id="prix_semaine" name="prix_semaine" class="form-input-admin">
+                <input type="number" step="0.01" id="prix_semaine" name="prix_semaine" class="form-input-admin" min="0.01" required>
             </div>
 
             <div class="form-group-admin">
                 <label for="prix_mois">Prix par mois :</label>
-                <input type="number" step="0.01" id="prix_mois" name="prix_mois" class="form-input-admin">
+                <input type="number" step="0.01" id="prix_mois" name="prix_mois" class="form-input-admin" min="0.01" required>
             </div>
 
             <div class="form-group-admin">

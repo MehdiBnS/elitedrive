@@ -9,7 +9,6 @@ use elitedrive\Entities\Avis;
 
 class AvisModel extends DbConnect
 {
-    // Afficher tous les avis
     public function displayAll()
     {
         try {
@@ -22,7 +21,6 @@ class AvisModel extends DbConnect
         }
     }
 
-    // Afficher un avis par son ID
     public function displayOne($id_avis)
     {
         try {
@@ -71,15 +69,12 @@ class AvisModel extends DbConnect
             $this->request = $this->connection->prepare("SELECT note FROM avis WHERE id_vehicule = :id_vehicule");
             $this->request->bindValue(':id_vehicule', $id_vehicule, PDO::PARAM_INT);
             $this->request->execute();
-            return $this->request->fetchAll(PDO::FETCH_COLUMN); // Retourne la valeur des moyennes
+            return $this->request->fetchAll(PDO::FETCH_COLUMN); 
         } catch (Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }
     }
 
-
-
-    // Créer un nouvel avis
     public function create(Avis $avis)
     {
         try {
@@ -98,8 +93,6 @@ class AvisModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-
-    // Mettre à jour un avis
     public function update(Avis $avis)
     {
         try {
@@ -121,8 +114,6 @@ class AvisModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-
-    // Supprimer un avis
     public function delete($id_avis)
     {
         try {
@@ -145,7 +136,6 @@ class AvisModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-    // Rechercher un avis
     public function search($search)
     {
         try {

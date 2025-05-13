@@ -32,6 +32,7 @@
                     <h2>Créer un utilisateur</h2>
                     <form id="createUserForm" method="POST" action="index.php?controller=Admin&action=createUser" enctype="multipart/form-data" class="form-cars-create" id="register-form">
 
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <label for="nom">Nom :</label>
                         <input type="text" id="nom" name="nom" required>
 
@@ -93,7 +94,7 @@
                         <td><?= htmlspecialchars($utilisateur->prenom) ?></td>
                         <td><?= htmlspecialchars($utilisateur->email) ?></td>
                         <td><?= htmlspecialchars($utilisateur->role) ?></td>
-                        <td><a href="index.php?controller=Admin&action=deleteUser&id_utilisateur=<?= htmlspecialchars($utilisateur->id_utilisateur) ?>">Supprimer</a></td>
+                        <td><a href="index.php?controller=Admin&action=deleteUser&session=<?= $_SESSION['csrf_token']?>&id_utilisateur=<?= htmlspecialchars($utilisateur->id_utilisateur) ?>">Supprimer</a></td>
                         <td><button class="btn-edit-user" data-utilisateur='<?= json_encode($utilisateur) ?>'>
                                 Modifier
                             </button>
@@ -106,7 +107,11 @@
     </div>
 <?php else: ?>
     <div class="order-admin">
-        Aucun utilisateur trouvé.
+    <div class="order-admin-button">
+                <a href="index.php?controller=Admin&action=backOffice">Retour</a>
+                Aucun utilisateur trouvé.
+            </div>
+    
     </div>
 <?php endif; ?>
 <div class="modal modalUpdateUser">
@@ -116,6 +121,7 @@
 
         <form method="POST" action="index.php?controller=Admin&action=updateUser" class="form-update-admin">
             <input type="hidden" id="id_utilisateur" name="id_utilisateur" readonly>
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" readonly>
 
             <div class="form-group-admin">
                 <label for="nom">Nom :</label>

@@ -87,6 +87,7 @@
                 </div>
 
                 <input type="hidden" name="rate" id="rate" required>
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($token) ?>">
 
                 <label for="comment">Commentaire :</label>
                 <textarea name="comment" id="comment" rows="4" placeholder="Écrivez votre commentaire ici..."></textarea>
@@ -143,7 +144,7 @@
                                         </a>
                                     <?php endif; ?>
 
-                                    <a href="#" class="supprimer" data-id-avis="<?= $a->id_avis ?>" data-id-utilisateur="<?= $a->id_utilisateur ?>">
+                                    <a href="#" class="supprimer" data-id-avis="<?= $a->id_avis ?>" data-id-utilisateur="<?= $a->id_utilisateur ?>" data-csrf_token="<?= $token ?>">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                                             <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
                                         </svg>
@@ -172,6 +173,7 @@
                                 <input type="hidden" name="id_avis" id="editIdAvis">
                                 <input type="hidden" name="id_utilisateur" id="editIdUtilisateur">
                                 <input type="hidden" name="id_vehicule" id="editIdVehicule">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($token) ?>">
 
                                 <button type="submit">Mettre à jour</button>
                             </form>

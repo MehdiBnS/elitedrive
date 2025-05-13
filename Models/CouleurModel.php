@@ -19,17 +19,6 @@ class CouleurModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-    public function displayOne($id_couleur)
-    {
-        try {
-            $this->request = $this->connection->prepare("SELECT * FROM couleur WHERE id_couleur = :id_couleur");
-            $this->request->bindValue(':id_couleur', $id_couleur);
-            $this->request->execute();
-            return $this->request->fetch();
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
     public function create(Couleur $couleur)
     {
         try {

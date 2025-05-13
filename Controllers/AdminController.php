@@ -33,10 +33,12 @@ class AdminController extends Controller
 {
 
 
-    // Affichage back office
+    ///////////////////////////////////////////////////BACKOFFICE/////////////////////////////////////////////////////
     public function backOffice()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
+
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(64));
             $id_utilisateur = $_SESSION['id_utilisateur'];
             $utilisateurModel = new UtilisateurModel();
             $utilisateur = $utilisateurModel->displayOne($id_utilisateur);
@@ -44,22 +46,40 @@ class AdminController extends Controller
         } else {
             $_SESSION['message'] = "Accès refusé.";
             header('Location: index.php');
+            exit();
         }
     }
 
+    ///////////////////////////////////////////////////BACKOFFICE/////////////////////////////////////////////////////
 
-    // Gestion des utilisateurs 
+
+
+
+
+
+
+
+
+
+
+
+    ///////////////////////////////////////////////////UTILISATEUR/////////////////////////////////////////////////////
+
 
     public function orderUsers()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $utilisateurModel = new UtilisateurModel();
 
+
             $search = isset($_POST['search']) ? trim($_POST['search']) : '';
             $utilisateurs = !empty($search)
                 ? $utilisateurModel->search($search)
                 : $utilisateurModel->displayAll();
 
+            if (empty($utilisateurs)) {
+                $_SESSION['message'] = "Aucun utilisateur trouvé.";
+            }
             $this->render('admin/orderUsers', ['utilisateurs' => $utilisateurs, 'search' => $search]);
         } else {
             $_SESSION['message'] = "Accès refusé.";
@@ -99,19 +119,56 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $nom = $_POST['nom'];
-                $prenom = $_POST['prenom'];
-                $email = $_POST['email'];
-                $mot_de_passe = password_hash($_POST['password'], PASSWORD_BCRYPT);
-                $numero_telephone = $_POST['tel'];
-                $ville = $_POST['ville'];
-                $role = $_POST['role'];
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
+                $nom = htmlspecialchars($_POST['nom']);
+                $prenom = htmlspecialchars($_POST['prenom']);
+                $mot_de_passe = trim($_POST['password']);
+                $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+                $numero_telephone = htmlspecialchars(trim($_POST['tel']));
+                $ville = htmlspecialchars(trim($_POST['ville']));
+                $role = (int) $_POST['role'];
+
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    echo json_encode(['success' => false, 'message' => 'Email invalide.<br>']);
+                    exit();
+                }
+                if (!preg_match('/^[0-9]{10}$/', $numero_telephone)) {
+                    echo json_encode(['success' => false, 'message' => 'Numéro de téléphone invalide.<br>']);
+                    exit();
+                }
+
+                if (strlen($mot_de_passe) < 8) {
+                    echo json_encode(['success' => false, 'message' => 'Le mot de passe doit contenir au moins 8 caractères.<br>']);
+                    exit();
+                }
+
+                if (!preg_match('/[A-Z]/', $mot_de_passe) || !preg_match('/[a-z]/', $mot_de_passe)) {
+                    echo json_encode(['success' => false, 'message' => 'Le mot de passe doit contenir une majuscule et une minuscule.<br>']);
+                    exit();
+                }
+                if (!preg_match('/\d/', $mot_de_passe)) {
+                    echo json_encode(['success' => false, 'message' => 'Le mot de passe doit contenir au moins un chiffre !<br>']);
+                    exit();
+                }
+                if (!preg_match('/[@$!%*?&]/', $mot_de_passe)) {
+                    echo json_encode(['success' => false, 'message' => 'Le mot de passe doit contenir au moins un symbole spécial (@$!%*?&) !<br>']);
+                    exit();
+                }
+                if (empty($nom) || empty($prenom) || empty($mot_de_passe) || empty($email) || empty($numero_telephone) || empty($ville)) {
+                    echo json_encode(['success' => false, 'message' => 'Tous les champs sont obligatoires.<br>']);
+                    exit();
+                }
+
+                $mot_de_passe_hash = password_hash($mot_de_passe, PASSWORD_BCRYPT);
 
                 $utilisateur = new Utilisateur();
                 $utilisateur->setNom($nom);
                 $utilisateur->setPrenom($prenom);
                 $utilisateur->setEmail($email);
-                $utilisateur->setMot_de_passe($mot_de_passe);
+                $utilisateur->setMot_de_passe($mot_de_passe_hash);
                 $utilisateur->setNumero_telephone($numero_telephone);
                 $utilisateur->setVille($ville);
                 $utilisateur->setRole($role);
@@ -139,28 +196,19 @@ class AdminController extends Controller
         }
     }
 
-    public function updateUserForm()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $id_utilisateur = $_GET['id_utilisateur'] ?? null;
-            $utilisateurModel = new UtilisateurModel();
-            $utilisateur = $utilisateurModel->displayOne($id_utilisateur);
-
-            $this->render('admin/updateUserForm', ['utilisateur' => $utilisateur]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
     public function updateUser()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $id_utilisateur = $_POST['id_utilisateur'];
-                $nom = $_POST['nom'];
-                $prenom = $_POST['prenom'];
-                $email = $_POST['email'];
+
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
+                $id_utilisateur = (int) $_POST['id_utilisateur'];
+                $nom = htmlspecialchars($_POST['nom']);
+                $prenom = htmlspecialchars($_POST['prenom']);
+                $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
                 $numero_telephone = $_POST['numero_telephone'];
                 $ville = $_POST['ville'];
                 $role = $_POST['role'];
@@ -193,8 +241,15 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_utilisateur']) && !empty($_GET['id_utilisateur'])) {
+                if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_utilisateur = $_GET['id_utilisateur'];
                 $utilisateurModel = new UtilisateurModel();
+
+                $demandeModel = new Demande_ReservationModel();
+                $demandeModel->deleteByIdUser($id_utilisateur);
 
                 if ($utilisateurModel->delete($id_utilisateur)) {
                     $_SESSION['message'] = "Utilisateur supprimé avec succès.";
@@ -213,9 +268,16 @@ class AdminController extends Controller
 
 
 
+    ///////////////////////////////////////////////////UTILISATEUR/////////////////////////////////////////////////////
 
 
-    // Gestion des véhicules
+
+
+
+
+
+
+    ///////////////////////////////////////////////////VEHICULES/////////////////////////////////////////////////////
 
 
     public function orderCars()
@@ -276,6 +338,10 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $nom = htmlspecialchars(trim($_POST['nom']));
                 $prix_km = filter_var($_POST['prix_km'], FILTER_VALIDATE_FLOAT);
                 $prix_jour = filter_var($_POST['prix_jour'], FILTER_VALIDATE_FLOAT);
@@ -364,21 +430,6 @@ class AdminController extends Controller
             exit();
         }
     }
-    public function updateCarForm()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $id_vehicule = $_GET['id_vehicule'] ?? null;
-            $vehiculeModel = new VehiculeModel();
-            $vehicule = $vehiculeModel->displayOne($id_vehicule);
-            $options = $vehiculeModel->displayOptions();
-
-            $this->render('admin/updateCarForm', ['vehicule' => $vehicule, 'options' => $options]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
     public function updateCar()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -386,6 +437,10 @@ class AdminController extends Controller
             $id_vehicule = isset($_GET['id_vehicule']) ? $_GET['id_vehicule'] : null;
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_vehicule = $_POST['id_vehicule'];
                 $nom = htmlspecialchars(trim($_POST['nom']));
                 $prix_km = filter_var($_POST['prix_km'], FILTER_VALIDATE_FLOAT);
@@ -475,6 +530,10 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             $id_vehicule = $_GET['id_vehicule'];
+            if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                exit();
+            }
 
             if (!$id_vehicule) {
                 $_SESSION['message'] = "Véhicule introuvable.";
@@ -511,7 +570,18 @@ class AdminController extends Controller
     }
 
 
-    /* Gestion des archives */
+
+
+
+    ///////////////////////////////////////////////////VEHICULES/////////////////////////////////////////////////////
+
+
+
+
+
+
+
+    ///////////////////////////////////////////////////ARCHIVES/////////////////////////////////////////////////////
 
 
     public function orderArchives()
@@ -569,19 +639,24 @@ class AdminController extends Controller
             echo "Méthode non autorisée.";
             exit();
         }
+        if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+            echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+            exit();
+        }
 
         $archive = new Archive();
-        $archive->setNom($_POST['nom']);
-        $archive->setPrenom($_POST['prenom']);
-        $archive->setNumero_telephone($_POST['numero_telephone']);
-        $archive->setVille($_POST['ville']);
-        $archive->setEmail($_POST['email']);
-        $archive->setNom_vehicule($_POST['nom_vehicule']);
-        $archive->setModele($_POST['modele']);
-        $archive->setMarque($_POST['marque']);
-        $archive->setCategorie_vehicule($_POST['categorie_vehicule']);
-        $archive->setMontant($_POST['montant']);
-        $archive->setDate($_POST['date']);
+        $archive->setNom(htmlspecialchars(($_POST['nom']), ENT_QUOTES, 'UTF-8'));
+        $archive->setPrenom(htmlspecialchars(($_POST['prenom']), ENT_QUOTES, 'UTF-8'));
+        $archive->setNumero_telephone(preg_replace('/[^\d+]/', '', $_POST['numero_telephone']));
+        $archive->setVille(htmlspecialchars(($_POST['ville']), ENT_QUOTES, 'UTF-8'));
+        $archive->setEmail(filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL));
+        $archive->setNom_vehicule(htmlspecialchars(($_POST['nom_vehicule']), ENT_QUOTES, 'UTF-8'));
+        $archive->setModele(htmlspecialchars(($_POST['modele']), ENT_QUOTES, 'UTF-8'));
+        $archive->setMarque(htmlspecialchars(($_POST['marque']), ENT_QUOTES, 'UTF-8'));
+        $archive->setCategorie_vehicule(htmlspecialchars(trim($_POST['categorie_vehicule']), ENT_QUOTES, 'UTF-8'));
+        $archive->setMontant(floatval($_POST['montant']));
+        $archive->setDate(date('Y-m-d', strtotime($_POST['date'])));
+
 
         $archiveModel = new ArchiveModel();
 
@@ -595,33 +670,17 @@ class AdminController extends Controller
     }
 
 
-    public function deleteArchive()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (isset($_GET['id_archive']) && !empty($_GET['id_archive'])) {
-                $id_archive = $_GET['id_archive'];
-                $archiveModel = new ArchiveModel();
-                if ($archiveModel->delete($id_archive)) {
-                    $_SESSION['message'] = "Archive supprimée avec succès.";
-                } else {
-                    $_SESSION['message'] = "Erreur lors de la suppression de l'archive.";
-                }
-                header('Location: index.php?controller=Admin&action=orderArchives');
-                exit();
-            } else {
-                $_SESSION['message'] = "Archive introuvable.";
-                header('Location: index.php?controller=Admin&action=orderArchives');
-                exit();
-            }
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
+
+    ///////////////////////////////////////////////////ARCHIVES/////////////////////////////////////////////////////
 
 
-    // Gestion  des avis
+
+
+
+
+
+
+    ///////////////////////////////////////////////////AVIS////////////////////////////////////////////////////
 
 
     public function orderAvis()
@@ -674,6 +733,10 @@ class AdminController extends Controller
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_avis']) && !empty($_GET['id_avis'])) {
                 $id_avis = $_GET['id_avis'];
+                if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $avisModel = new AvisModel();
                 if (!$id_avis) {
                     $_SESSION['message'] = "Avis introuvable.";
@@ -702,9 +765,17 @@ class AdminController extends Controller
 
 
 
-    // Gestion des options
+
+    ///////////////////////////////////////////////////AVIS////////////////////////////////////////////////////
 
 
+
+
+    ///////////////////////////////////////////////////OPTIONS////////////////////////////////////////////////////
+
+
+
+    /////////////////////CATEGORIES///////////////////////////
     public function orderOptions()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -719,39 +790,18 @@ class AdminController extends Controller
         }
     }
 
-    public function orderOneCategory()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (!isset($_GET['id_categorie'])) {
-                $_SESSION['message'] = "Aucune catégorie sélectionnée.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
-
-            $id_categorie = filter_var($_GET['id_categorie'], FILTER_VALIDATE_INT);
-            $categorieModel = new CategorieModel();
-            $categorie = $categorieModel->displayOne($id_categorie);
-
-            if (!$categorie) {
-                $_SESSION['message'] = "Catégorie introuvable.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
-
-            $this->render('admin/orderOneCategory', ['categorie' => $categorie]);
-        } else {
-            $_SESSION['message'] = "Accès non autorisé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
+    /////////////////////CATEGORIES///////////////////////////
 
     public function createCategory()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $nom = htmlspecialchars(trim($_POST['nom']));
-                $description = htmlspecialchars(trim($_POST['description']));
+                $description = htmlspecialchars(trim($_POST['description']), ENT_NOQUOTES, 'UTF-8');
                 $photo = isset($_FILES['photo']) ? $_FILES['photo'] : null;
                 $categorie = new Categorie();
                 $categorie->setNom($nom);
@@ -817,30 +867,17 @@ class AdminController extends Controller
     }
 
 
-    public function updateCategoryForm()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $id_categorie = $_GET['id_categorie'] ?? null;
-            $categorieModel = new CategorieModel();
-            $categorie = $categorieModel->displayOne($id_categorie);
-
-
-            $this->render('admin/updateCategoryForm', ['categorie' => $categorie]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
-
-
     public function updateCategory()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_categorie = $_POST['id_categorie'];
-                $nom = $_POST['nom'];
-                $description = $_POST['description'];
+                $nom = htmlspecialchars($_POST['nom']);
+                $description = htmlspecialchars(($_POST['description']), ENT_NOQUOTES, 'UTF-8');
                 $photo = isset($_FILES['photo']) ? $_FILES['photo'] : null;
                 $categorie = new Categorie();
                 $categorie->setId_categorie($id_categorie);
@@ -904,6 +941,10 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_categorie']) && !empty($_GET['id_categorie'])) {
+                if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_categorie = $_GET['id_categorie'];
                 $categorieModel = new CategorieModel();
                 if ($categorieModel->delete($id_categorie)) {
@@ -925,40 +966,24 @@ class AdminController extends Controller
             exit();
         }
     }
-    // Afficher tous les modèles
-    public function orderOneModeles()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (!isset($_GET['id_modele'])) {
-                $_SESSION['message'] = "Aucun modèle sélectionné.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
 
-            $id_modele = filter_var($_GET['id_modele'], FILTER_VALIDATE_INT);
-            $modeleModel = new ModeleModel();
-            $modele = $modeleModel->displayOne($id_modele);
+    /////////////////////CATEGORIES///////////////////////////
 
-            if (!$modele) {
-                $_SESSION['message'] = "Modèle introuvable.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
 
-            $this->render('admin/orderOneModeles', ['modele' => $modele]);
-        } else {
-            $_SESSION['message'] = "Accès non autorisé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
+
+    /////////////////////MODELES///////////////////////////
 
     public function createModele()
     {
 
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $nom = htmlspecialchars(trim($_POST['nom']));
+
                 $modele = new Modele();
                 $modele->setNom($nom);
                 $modeleModel = new ModeleModel();
@@ -984,25 +1009,14 @@ class AdminController extends Controller
         }
     }
 
-    public function updateModeleForm()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $id_modele = $_GET['id_modele'] ?? null;
-            $modeleModel = new ModeleModel();
-            $modele = $modeleModel->displayOne($id_modele);
-
-            $this->render('admin/updateModeleForm', ['modele' => $modele]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
-
     public function updateModele()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_modele = $_POST['id_modele'];
                 $nom = htmlspecialchars(trim($_POST['nom']));
                 $modele = new Modele();
@@ -1030,6 +1044,10 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_modele']) && !empty($_GET['id_modele'])) {
+                if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_modele = $_GET['id_modele'];
                 $modeleModel = new ModeleModel();
                 if ($modeleModel->delete($id_modele)) {
@@ -1051,39 +1069,25 @@ class AdminController extends Controller
             exit();
         }
     }
-    // Afficher toutes les marques
 
-    public function orderOneMarque()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (!isset($_GET['id_marque'])) {
-                $_SESSION['message'] = "Aucune marque sélectionnée.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
 
-            $id_marque = filter_var($_GET['id_marque'], FILTER_VALIDATE_INT);
-            $marqueModel = new MarqueModel();
-            $marque = $marqueModel->displayOne($id_marque);
+    /////////////////////MODELES///////////////////////////
 
-            if (!$marque) {
-                $_SESSION['message'] = "Marque introuvable.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
 
-            $this->render('admin/showOneMarque', ['marque' => $marque]);
-        } else {
-            $_SESSION['message'] = "Accès non autorisé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
+
+
+
+
+    /////////////////////MARQUES///////////////////////////
 
     public function createMarque()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $nom = htmlspecialchars(trim($_POST['nom']));
                 $marque = new Marque();
                 $marque->setNom($nom);
@@ -1110,26 +1114,15 @@ class AdminController extends Controller
         }
     }
 
-    public function updateMarqueForm()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $id_marque = $_GET['id_marque'] ?? null;
-            $marqueModel = new MarqueModel();
-            $marque = $marqueModel->displayOne($id_marque);
-
-            $this->render('admin/updateMarqueForm', ['marque' => $marque]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
-
 
     public function updateMarque()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_marque = $_POST['id_marque'];
                 $nom = htmlspecialchars(trim($_POST['nom']));
 
@@ -1165,6 +1158,10 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_marque']) && !empty($_GET['id_marque'])) {
+                if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_marque = $_GET['id_marque'];
                 $marqueModel = new MarqueModel();
                 if ($marqueModel->delete($id_marque)) {
@@ -1189,37 +1186,21 @@ class AdminController extends Controller
 
 
 
-    public function orderOneCarburant()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (!isset($_GET['id_carburant'])) {
-                $_SESSION['message'] = "Aucun carburant sélectionné.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
+    /////////////////////MARQUES///////////////////////////
 
-            $id_carburant = filter_var($_GET['id_carburant'], FILTER_VALIDATE_INT);
-            $carburantModel = new CarburantModel();
-            $carburant = $carburantModel->displayOne($id_carburant);
 
-            if (!$carburant) {
-                $_SESSION['message'] = "Carburant introuvable.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
 
-            $this->render('admin/orderOneCarburant', ['carburant' => $carburant]);
-        } else {
-            $_SESSION['message'] = "Accès non autorisé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
+
+    /////////////////////CARBURANTS///////////////////////////
 
     public function createCarburant()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $type = htmlspecialchars(trim($_POST['type']));
                 $carburant = new Carburant();
                 $carburant->setType($type);
@@ -1246,26 +1227,14 @@ class AdminController extends Controller
         }
     }
 
-    public function updateCarburantForm()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $id_carburant = $_GET['id_carburant'] ?? null;
-            $carburantModel = new CarburantModel();
-            $carburant = $carburantModel->displayOne($id_carburant);
-
-            $this->render('admin/updateCarburantForm', ['carburant' => $carburant]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
-
-
     public function updateCarburant()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_carburant = $_POST['id_carburant'];
                 $type = htmlspecialchars(trim($_POST['type']));
                 $carburant = new Carburant();
@@ -1294,6 +1263,10 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_carburant']) && !empty($_GET['id_carburant'])) {
+                if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_carburant = $_GET['id_carburant'];
                 $carburantModel = new CarburantModel();
                 if ($carburantModel->delete($id_carburant)) {
@@ -1317,38 +1290,22 @@ class AdminController extends Controller
     }
 
 
-    public function orderOneTransmission()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (!isset($_GET['id_transmission'])) {
-                $_SESSION['message'] = "Aucune transmission sélectionnée.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
+    /////////////////////CARBURANTS///////////////////////////
 
-            $id_transmission = filter_var($_GET['id_transmission'], FILTER_VALIDATE_INT);
-            $transmissionModel = new TransmissionModel();
-            $transmission = $transmissionModel->displayOne($id_transmission);
 
-            if (!$transmission) {
-                $_SESSION['message'] = "Transmission introuvable.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
 
-            $this->render('admin/orderOneTransmission', ['transmission' => $transmission]);
-        } else {
-            $_SESSION['message'] = "Accès non autorisé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
+
+    /////////////////////TRANSMISSIONS///////////////////////////
 
     // Créer une transmission
     public function createTransmission()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $type = htmlspecialchars(trim($_POST['type']));
                 $transmission = new Transmission();
                 $transmission->setType($type);
@@ -1375,25 +1332,14 @@ class AdminController extends Controller
         }
     }
 
-    public function updateTransmissionForm()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $id_transmission = $_GET['id_transmission'] ?? null;
-            $transmissionModel = new TransmissionModel();
-            $transmission = $transmissionModel->displayOne($id_transmission);
-
-            $this->render('admin/updateTransmissionForm', ['transmission' => $transmission]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
-
     public function updateTransmission()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_transmission = $_POST['id_transmission'];
                 $type = htmlspecialchars(trim($_POST['type']));
                 $transmission = new Transmission();
@@ -1421,6 +1367,10 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_transmission']) && !empty($_GET['id_transmission'])) {
+                if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_transmission = $_GET['id_transmission'];
                 $transmissionModel = new TransmissionModel();
                 if ($transmissionModel->delete($id_transmission)) {
@@ -1443,37 +1393,24 @@ class AdminController extends Controller
         }
     }
 
-    public function orderOnePlace()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (!isset($_GET['id_places'])) {
-                $_SESSION['message'] = "Aucune place sélectionnée.";
-                header('Location: index.php?controller=Admin&action=orderPlaces');
-                exit();
-            }
 
-            $id_places = filter_var($_GET['id_places'], FILTER_VALIDATE_INT);
-            $placesModel = new PlacesModel();
-            $place = $placesModel->displayOne($id_places);
 
-            if (!$place) {
-                $_SESSION['message'] = "Place introuvable.";
-                header('Location: index.php?controller=Admin&action=orderPlaces');
-                exit();
-            }
+    /////////////////////TRANSMISSIONS///////////////////////////
 
-            $this->render('admin/orderOnePlace', ['place' => $place]);
-        } else {
-            $_SESSION['message'] = "Accès non autorisé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
+
+
+
+
+    /////////////////////PLACES///////////////////////////
 
     public function createPlaces()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $nombre = filter_var($_POST['nombre'], FILTER_VALIDATE_INT);
                 $place = new Places();
                 $place->setNombre($nombre);
@@ -1500,25 +1437,14 @@ class AdminController extends Controller
         }
     }
 
-    public function updatePlacesForm()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $id_places = $_GET['id_places'] ?? null;
-            $placesModel = new PlacesModel();
-            $places = $placesModel->displayOne($id_places);
-
-            $this->render('admin/updatePlacesForm', ['places' => $places]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
-
     public function updatePlaces()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_places = $_POST['id_places'];
                 $nombre = filter_var($_POST['nombre'], FILTER_VALIDATE_INT);
                 $place = new Places();
@@ -1547,11 +1473,15 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_places']) && !empty($_GET['id_places'])) {
+                if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_places = $_GET['id_places'];
                 $placesModel = new PlacesModel();
-                $place = $placesModel->displayOne($id_places);
 
-                if (!$place) {
+
+                if (!$id_places) {
                     $_SESSION['message'] = "Place introuvable.";
                     header('Location: index.php?controller=Admin&action=orderOptions');
                     exit();
@@ -1576,37 +1506,22 @@ class AdminController extends Controller
         }
     }
 
-    public function orderOneCouleur()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (!isset($_GET['id_couleur'])) {
-                $_SESSION['message'] = "Aucune couleur sélectionnée.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
 
-            $id_couleur = filter_var($_GET['id_couleur'], FILTER_VALIDATE_INT);
-            $couleurModel = new CouleurModel();
-            $couleur = $couleurModel->displayOne($id_couleur);
+    /////////////////////PLACES///////////////////////////
 
-            if (!$couleur) {
-                $_SESSION['message'] = "Couleur introuvable.";
-                header('Location: index.php?controller=Admin&action=orderOptions');
-                exit();
-            }
 
-            $this->render('admin/orderOneCouleur', ['couleur' => $couleur]);
-        } else {
-            $_SESSION['message'] = "Accès non autorisé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
+
+
+    /////////////////////COULEURS///////////////////////////
 
     public function createCouleur()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $nom = htmlspecialchars(trim($_POST['nom']));
                 $couleur = new Couleur();
                 $couleur->setNom($nom);
@@ -1632,27 +1547,14 @@ class AdminController extends Controller
             exit();
         }
     }
-
-
-    public function updateCouleurForm()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $id_couleur = $_GET['id_couleur'] ?? null;
-            $couleurModel = new CouleurModel();
-            $couleur = $couleurModel->displayOne($id_couleur);
-
-            $this->render('admin/updateCouleurForm', ['couleur' => $couleur]);
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php');
-            exit();
-        }
-    }
-
     public function updateCouleur()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_couleur = $_POST['id_couleur'];
                 $nom = htmlspecialchars(trim($_POST['nom']));
                 $couleur = new Couleur();
@@ -1680,6 +1582,10 @@ class AdminController extends Controller
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
             if (isset($_GET['id_couleur']) && !empty($_GET['id_couleur'])) {
+                if (!isset($_GET['session'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['session'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                    exit();
+                }
                 $id_couleur = $_GET['id_couleur'];
                 $couleurModel = new CouleurModel();
                 if ($couleurModel->delete($id_couleur)) {
@@ -1701,6 +1607,19 @@ class AdminController extends Controller
             exit();
         }
     }
+
+    /////////////////////COULEURS///////////////////////////
+
+    ///////////////////////////////////////////////////OPTIONS////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+    ///////////////////////////////////////////////////DEMANDE////////////////////////////////////////////////////
 
     public function orderDemande()
     {
@@ -1744,49 +1663,17 @@ class AdminController extends Controller
             }
         }
     }
-    public function createDemande()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $message = htmlspecialchars(trim($_POST['message']));
-                $date_debut = htmlspecialchars(trim($_POST['date_debut']));
-                $date_fin = htmlspecialchars(trim($_POST['date_fin']));
-                $montant = filter_var($_POST['montant'], FILTER_VALIDATE_FLOAT);
-                $statut = htmlspecialchars(trim($_POST['statut']));
-                $forfait = htmlspecialchars(trim($_POST['forfait']));
-                $id_utilisateur = intval($_POST['id_utilisateur']);
-                $id_vehicule = intval($_POST['id_vehicule']);
-                $demande = new Demande_Reservation();
-                $demande->setMessage($message);
-                $demande->setDate_debut($date_debut);
-                $demande->setDate_fin($date_fin);
-                $demande->setMontant($montant);
-                $demande->setStatut($statut);
-                $demande->setForfait($forfait);
-                $demande->setId_utilisateur($id_utilisateur);
-                $demande->setId_vehicule($id_vehicule);
-                $demandeReservationModel = new Demande_ReservationModel();
-                if ($demandeReservationModel->create($demande)) {
-                    $_SESSION['message'] = "Demande de réservation créée avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderDemande');
-                    exit();
-                } else {
-                    $_SESSION['message'] = "Erreur lors de la création de la demande de réservation.";
-                }
-            }
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php?');
-            exit();
-        }
-    }
-
     public function updateStatutDemande()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
+            if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
+                exit();
+            }
             if (
                 isset($_POST['id_demande']) && !empty($_POST['id_demande']) &&
                 isset($_POST['statut']) && in_array($_POST['statut'], ['Acceptée', 'Refusée'])
+
             ) {
                 $id_demande = $_POST['id_demande'];
                 $statut = $_POST['statut'];
@@ -1881,38 +1768,17 @@ class AdminController extends Controller
     }
 
 
-    public function deleteDemande()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (isset($_GET['id_demande']) && !empty($_GET['id_demande'])) {
-                $id_demande = $_GET['id_demande_reseid_demandervation'];
-                $demandeReservationModel = new Demande_ReservationModel();
-                $demande = $demandeReservationModel->displayOne($id_demande);
 
-                if (!$demande) {
-                    $_SESSION['message'] = "Demande introuvable.";
-                    header('Location: index.php?controller=Admin&action=orderDemande');
-                    exit();
-                }
-                if ($demandeReservationModel->delete($id_demande)) {
-                    $_SESSION['message'] = "Demande supprimée avec succès.";
-                } else {
-                    $_SESSION['message'] = "Erreur lors de la suppression de la demande.";
-                }
 
-                header('Location: index.php?controller=Admin&action=orderDemande');
-                exit();
-            } else {
-                $_SESSION['message'] = "Demande introuvable.";
-                header('Location: index.php?controller=Admin&action=orderDemande');
-                exit();
-            }
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
+    ///////////////////////////////////////////////////DEMANDE////////////////////////////////////////////////////
+
+
+
+
+
+    ///////////////////////////////////////////////////RESERVATIONS////////////////////////////////////////////////////
+
+
     public function orderReservations()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
@@ -1930,132 +1796,40 @@ class AdminController extends Controller
         }
     }
 
-    public function orderOneReservation()
+    public function updateReservationStatut()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (!isset($_GET['id_reservation'])) {
-                $_SESSION['message'] = "Aucune réservation sélectionnée.";
-                header('Location: index.php?controller=Admin&action=orderReservations');
-                exit();
-            }
-
-            $id_reservation = filter_var($_GET['id_reservation'], FILTER_VALIDATE_INT);
-            $reservationModel = new ReservationModel();
-            $reservation = $reservationModel->displayOne($id_reservation);
-
-            if (!$reservation) {
-                $_SESSION['message'] = "Réservation introuvable.";
-                header('Location: index.php?controller=Admin&action=orderReservations');
-                exit();
-            }
-
-            $this->render('admin/orderOneReservation', ['reservation' => $reservation]);
-        } else {
-            $_SESSION['message'] = "Accès non autorisé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
-
-    public function createReservation()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $id_utilisateur = intval($_POST['id_utilisateur']);
-                $id_vehicule = intval($_POST['id_vehicule']);
-                $montant = filter_var($_POST['montant'], FILTER_VALIDATE_FLOAT);
-                $date_debut = htmlspecialchars(trim($_POST['date_debut']));
-                $date_fin = htmlspecialchars(trim($_POST['date_fin']));
-                $forfait = htmlspecialchars(trim($_POST['forfait']));
-                $reservation = new Reservation();
-                $reservation->setId_utilisateur($id_utilisateur);
-                $reservation->setId_vehicule($id_vehicule);
-                $reservation->setMontant($montant);
-                $reservation->setDate_debut($date_debut);
-                $reservation->setDate_fin($date_fin);
-                $reservation->setForfait($forfait);
-
-                $reservationModel = new ReservationModel();
-                if ($reservationModel->create($reservation)) {
-                    $_SESSION['message'] = "Réservation créée avec succès.";
-                    header('Location: index.php?controller=Admin&action=orderReservations');
+            if (isset($_POST['id_vehicule']) && !empty($_POST['id_vehicule'])) {
+                $id_reservation = $_POST['id_reservation'];
+                $id_vehicule = $_POST['id_vehicule'];
+                $statut = $_POST['statut'];
+                if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                    echo json_encode(['success' => false, 'message' => 'Token CSRF invalide.']);
                     exit();
-                } else {
-                    $_SESSION['message'] = "Erreur lors de la création de la réservation.";
                 }
-            }
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
-    public function updateReservation()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (isset($_GET['id_reservation']) && !empty($_GET['id_reservation'])) {
-                $id_reservation = $_GET['id_reservation'];
-                $reservationModel = new ReservationModel();
-                $reservation = $reservationModel->displayOne($id_reservation);
-
-                if (!$reservation) {
-                    $_SESSION['message'] = "Réservation introuvable.";
+                if (!in_array($statut, ['Réserver', 'Loué', 'Maintenance', 'Disponible'])) {
+                    $_SESSION['message'] = "Statut invalide.";
                     header('Location: index.php?controller=Admin&action=orderReservations');
                     exit();
                 }
-                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    $id_utilisateur = intval($_POST['id_utilisateur']);
-                    $id_vehicule = intval($_POST['id_vehicule']);
-                    $montant = filter_var($_POST['montant'], FILTER_VALIDATE_FLOAT);
-                    $date_debut = htmlspecialchars(trim($_POST['date_debut']));
-                    $date_fin = htmlspecialchars(trim($_POST['date_fin']));
-                    $forfait = htmlspecialchars(trim($_POST['forfait']));
-                    $reservation->setId_utilisateur($id_utilisateur);
-                    $reservation->setId_vehicule($id_vehicule);
-                    $reservation->setMontant($montant);
-                    $reservation->setDate_debut($date_debut);
-                    $reservation->setDate_fin($date_fin);
-                    $reservation->setForfait($forfait);
-                    if ($reservationModel->update($reservation)) {
-                        $_SESSION['message'] = "Réservation mise à jour avec succès.";
+
+                if ($statut === 'Disponible') {
+                    $reservationModel = new ReservationModel();
+                    $reservation = $reservationModel->updateEndDate($id_vehicule, $id_reservation);
+                    if ($reservation) {
+                        $statut = 'Disponible';
+                    } else {
+                        $_SESSION['message'] = "Erreur lors de la mise à jour de la date de fin.";
                         header('Location: index.php?controller=Admin&action=orderReservations');
                         exit();
-                    } else {
-                        $_SESSION['message'] = "Erreur lors de la mise à jour de la réservation.";
                     }
                 }
-                $this->render('admin/updateReservation', ['reservation' => $reservation]);
-            } else {
-                $_SESSION['message'] = "Réservation introuvable.";
-                header('Location: index.php?controller=Admin&action=orderReservations');
-                exit();
-            }
-        } else {
-            $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
-            exit();
-        }
-    }
 
-    public function deleteReservation()
-    {
-        if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            if (isset($_GET['id_reservation']) && !empty($_GET['id_reservation'])) {
-                $id_reservation = $_GET['id_reservation'];
-
-                $reservationModel = new ReservationModel();
-                $reservation = $reservationModel->displayOne($id_reservation);
-
-                if (!$reservation) {
-                    $_SESSION['message'] = "Réservation introuvable.";
-                    header('Location: index.php?controller=Admin&action=orderReservations');
-                    exit();
-                }
-
-                if ($reservationModel->delete($id_reservation)) {
-                    $_SESSION['message'] = "Réservation supprimée avec succès.";
+                $vehiculeModel = new VehiculeModel();
+                if ($vehiculeModel->updateStatut($statut, $id_vehicule)) {
+                    $_SESSION['message'] = "Statut de la réservation mis à jour avec succès.";
                 } else {
-                    $_SESSION['message'] = "Erreur lors de la suppression de la réservation.";
+                    $_SESSION['message'] = "Erreur lors de la mise à jour du statut.";
                 }
 
                 header('Location: index.php?controller=Admin&action=orderReservations');
@@ -2067,8 +1841,12 @@ class AdminController extends Controller
             }
         } else {
             $_SESSION['message'] = "Accès refusé.";
-            header('Location: index.php?controller=Admin&action=backOffice');
+            header('Location: index.php');
             exit();
         }
     }
 }
+
+
+
+     ///////////////////////////////////////////////////RESERVATIONS////////////////////////////////////////////////////

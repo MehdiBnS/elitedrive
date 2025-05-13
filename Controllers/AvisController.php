@@ -12,8 +12,13 @@ class AvisController extends Controller
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 0) {
             $inputData = json_decode(file_get_contents('php://input'), true);
 
+            if (!isset($inputData['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $inputData['csrf_token'])) {
+                echo json_encode(['success' => false, 'error' => 'Token CSRF invalide.']);
+                exit();
+            }
+
             if (!$inputData) {
-                echo json_encode(['success' => false, 'message' => 'Données invalides']);
+                echo json_encode(['success' => false, 'message' => 'Données invalides.']);
                 return;
             }
 
@@ -22,15 +27,15 @@ class AvisController extends Controller
                 return;
             }
 
-            $id_utilisateur = $_SESSION['id_utilisateur'];
-            $nom = $_SESSION['nom'];
-            $prenom = $_SESSION['prenom'];
-            $id_vehicule = $_GET['id_vehicule'];
-            $note = (int) $inputData['rate'];
-            $commentaire = $inputData['comment'] ?? null;
+            $id_utilisateur = (int) $_SESSION['id_utilisateur'];
+            $nom = htmlspecialchars($_SESSION['nom']);
+            $prenom = htmlspecialchars($_SESSION['prenom']);
+            $id_vehicule = filter_var($_GET['id_vehicule'], FILTER_VALIDATE_INT);
+            $note = filter_var($inputData['rate'], FILTER_VALIDATE_INT);
+            $commentaire = htmlspecialchars(trim($inputData['comment'] ?? ''), ENT_NOQUOTES, 'UTF-8');
 
-            if (empty($note) || !is_numeric($note) || $note < 1 || $note > 5) {
-                echo json_encode(['success' => false, 'message' => 'Note invalide.']);
+            if (!$id_vehicule || !$note || $note < 1 || $note > 5 || empty($commentaire)) {
+                echo json_encode(['success' => false, 'message' => 'Note ou commentaire invalide.']);
                 return;
             }
 
@@ -43,16 +48,15 @@ class AvisController extends Controller
             $avisModel = new AvisModel();
             if ($avisModel->create($avis)) {
                 $avisList = $avisModel->displayByIdCar($id_vehicule);
-                $response = [
+                echo json_encode([
                     'success' => true,
                     'message' => 'Avis ajouté avec succès.',
                     'avis' => $avisList,
-                    'nom_utilisateur' => htmlspecialchars($nom),
-                    'prenom_utilisateur' => htmlspecialchars($prenom),
+                    'nom_utilisateur' => $nom,
+                    'prenom_utilisateur' => $prenom,
                     'commentaire' => nl2br(htmlspecialchars($commentaire)),
-                    'note' => htmlspecialchars($note)
-                ];
-                echo json_encode($response);
+                    'note' => $note
+                ]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'ajout de l\'avis.']);
             }
@@ -60,91 +64,85 @@ class AvisController extends Controller
             echo json_encode(['success' => false, 'redirect' => 'index.php?controller=Utilisateur&action=connectForm']);
         }
     }
-
-
     public function delete()
     {
-        if (isset($_SESSION['id_utilisateur']) && ($_SESSION['role'] == 0 || $_SESSION['role'] == 1)) {
-            if (isset($_POST['id_utilisateur'])) {
-                $id_utilisateur = $_POST['id_utilisateur'];
-                $id_avis = $_POST['id_avis'];
-                $avisModel = new AvisModel();
-                if ($avisModel->deleteByIdUser($id_utilisateur, $id_avis)) {
-                    $response = ['status' => 'success', 'message' => 'Avis supprimé.'];
-                    echo json_encode($response);
-                } else {
-                    $response = ['status' => 'error', 'message' => 'Erreur lors de la suppression.'];
-                    echo json_encode($response);
-                }
-            } elseif (isset($_POST['id_avis'])) {
-                $id_avis = $_POST['id_avis'];
-                $avisModel = new AvisModel();
-                if ($avisModel->delete($id_avis)) {
-                    $response = ['status' => 'success', 'message' => 'Avis supprimé avec succès.'];
-                    echo json_encode($response);
-                } else {
-                    $response = ['status' => 'error', 'message' => 'Erreur lors de la suppression.'];
-                    echo json_encode($response);
-                }
+        if (isset($_SESSION['id_utilisateur']) && in_array($_SESSION['role'], [0, 1])) {
+            $id_avis = filter_input(INPUT_POST, 'id_avis', FILTER_VALIDATE_INT);
+            $id_utilisateur = filter_input(INPUT_POST, 'id_utilisateur', FILTER_VALIDATE_INT);
+
+
+            if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                echo json_encode(['success' => false, 'error' => 'Token CSRF invalide.']);
+                exit();
             }
+
+            if (!$id_avis) {
+                echo json_encode(['status' => 'error', 'message' => 'ID avis manquant ou invalide.']);
+                return;
+            }
+
+            $avisModel = new AvisModel();
+            $result = false;
+
+            if ($id_utilisateur) {
+                $result = $avisModel->deleteByIdUser($id_utilisateur, $id_avis);
+            } else {
+                $result = $avisModel->delete($id_avis);
+            }
+
+            echo json_encode([
+                'status' => $result ? 'success' : 'error',
+                'message' => $result ? 'Avis supprimé.' : 'Erreur lors de la suppression.'
+            ]);
         } else {
-            $response = ['status' => 'error', 'message' => 'Vous devez être connecté pour supprimer un avis.'];
-            echo json_encode($response);
+            echo json_encode(['status' => 'error', 'message' => 'Vous devez être connecté pour supprimer un avis.']);
         }
     }
-
-
-
     public function update()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 0) {
+            $id_vehicule = filter_input(INPUT_GET, 'id_vehicule', FILTER_VALIDATE_INT);
+            $id_avis = filter_input(INPUT_GET, 'id_avis', FILTER_VALIDATE_INT);
 
-            if (!isset($_GET['id_avis']) || !isset($_GET['id_utilisateur']) || !isset($_GET['id_vehicule'])) {
+
+            if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                echo json_encode(['success' => false, 'error' => 'Token CSRF invalide.']);
+                exit();
+            }
+
+            if (!$id_vehicule || !$id_avis) {
                 $_SESSION['error_message'] = "Informations manquantes pour la modification de l'avis.";
                 header('Location: index.php?controller=Vehicule&action=showVehicule');
                 exit();
-            } else {
-                $id_utilisateur = $_SESSION['id_utilisateur'];
-                $id_vehicule = $_GET['id_vehicule'];
-                $id_avis = $_GET['id_avis'];
-
-                if ($id_utilisateur != $_SESSION['id_utilisateur']) {
-                    echo "Ce n'est pas votre avis, vous ne pouvez pas le modifier.";
-                    //ajax
-                } else {
-                    $note = $_POST['rate'];
-                    $commentaire = $_POST['comment'] ?? null;
-
-                    if (empty($note) || !is_numeric($note) || $note < 1 || $note > 5) {
-                        $_SESSION['message'] = "La note est obligatoire et doit être un nombre entre 1 et 5.";
-                        //ajax
-                    }
-
-                    $avis = new Avis();
-                    $avis->setId_avis($id_avis);
-                    $avis->setId_utilisateur($id_utilisateur);
-                    $avis->setId_vehicule($id_vehicule);
-                    $avis->setNote($note);
-                    $avis->setCommentaire($commentaire);
-
-                    // Créer une instance du modèle AvisModel
-                    $avisModel = new AvisModel();
-
-
-                    if ($avisModel->update($avis)) {
-                        // Si la mise à jour réussit, rediriger l'utilisateur avec un message de succès
-                        $_SESSION['message'] = "Votre avis a été mis à jour avec succès.";
-                        //ajax
-
-                    } else {
-                        // Si la mise à jour échoue, afficher un message d'erreur
-                        $_SESSION['message'] = "Une erreur est survenue lors de la mise à jour de votre avis.";
-                        //ajax
-                    }
-                }
             }
+
+            $note = filter_input(INPUT_POST, 'rate', FILTER_VALIDATE_INT);
+            $commentaire = htmlspecialchars(trim($_POST['comment'] ?? ''), ENT_NOQUOTES, 'UTF-8');
+
+            if (!$note || $note < 1 || $note > 5 || empty($commentaire)) {
+                $_SESSION['message'] = "La note est obligatoire et doit être entre 1 et 5. Le commentaire ne peut pas être vide.";
+                header('Location: index.php?controller=Vehicule&action=showVehicule&id=' . $id_vehicule);
+                exit();
+            }
+
+            $avis = new Avis();
+            $avis->setId_avis($id_avis);
+            $avis->setId_utilisateur((int) $_SESSION['id_utilisateur']);
+            $avis->setId_vehicule($id_vehicule);
+            $avis->setNote($note);
+            $avis->setCommentaire($commentaire);
+
+            $avisModel = new AvisModel();
+
+            if ($avisModel->update($avis)) {
+                $_SESSION['message'] = "Votre avis a été mis à jour avec succès.";
+            } else {
+                $_SESSION['message'] = "Une erreur est survenue lors de la mise à jour.";
+            }
+
+            header('Location: index.php?controller=Vehicule&action=showVehicule&id=' . $id_vehicule);
+            exit();
         } else {
-            // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
             header('Location: index.php?controller=Utilisateur&action=connectForm');
             exit();
         }

@@ -61,7 +61,7 @@
 <?php else: ?>
     <div class="order-admin">
         Aucune réservation trouvée.
-        <a href="index.php?controller=Admin&action=orderDemande" style="margin-left: 10px;">Retourner à toute les demandes</a>
+        <a href="index.php?controller=Admin&action=orderDemande" style="margin-left: 10px;">Retour</a>
     </div>
 <?php endif; ?>
 

@@ -24,7 +24,7 @@
 
     <div class="order-admin-one-button">
     <div class="order-admin-one">
-        <a href="index.php?controller=Admin&action=deleteAvis&id_avis=<?= htmlspecialchars($avis->id_avis) ?>">Supprimer</a>
+        <a href="index.php?controller=Admin&action=deleteAvis&session=<?= $_SESSION['csrf_token']?>&id_avis=<?= htmlspecialchars($avis->id_avis) ?>">Supprimer</a>
     </div>
 
     <div class="order-admin-one">

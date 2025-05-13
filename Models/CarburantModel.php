@@ -19,17 +19,6 @@ class CarburantModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-    public function displayOne($id_carburant)
-    {
-        try {
-            $this->request = $this->connection->prepare("SELECT * FROM carburant WHERE id_carburant = :id_carburant");
-            $this->request->bindValue(':id_carburant', $id_carburant);
-            $this->request->execute();
-            return $this->request->fetch();
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
     public function create(Carburant $carburant)
     {
         try {

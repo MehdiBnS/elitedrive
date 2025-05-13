@@ -27,6 +27,7 @@
                     <span class="close">&times;</span>
                     <h2>Ajouter une Catégorie</h2>
                     <form method="POST" action="index.php?controller=Admin&action=createCategory" enctype="multipart/form-data" class="form-cars-create" id="formCategory">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <label for="nom">Nom de la catégorie :</label>
                         <input type="text" id="nom" name="nom" required>
                         <label for="description">Description :</label>
@@ -44,6 +45,7 @@
                     <span class="close closeUpdate">&times;</span>
                     <h2>Modifier une Catégorie</h2>
                     <form method="POST" action="index.php?controller=Admin&action=updateCategory" enctype="multipart/form-data" class="form-update-admin">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <input type="hidden" id="edit_id_categorie" name="id_categorie">
                         <label for="edit_nom_categorie">Nom :</label>
                         <input type="text" id="edit_nom_categorie" name="nom" required>
@@ -73,7 +75,7 @@
                             data-description="<?= htmlspecialchars($categorie['description'], ENT_QUOTES) ?>">
                             Modifier
                         </button>
-                        <a href="index.php?controller=Admin&action=deleteCategory&id_categorie=<?= $categorie['id_categorie'] ?>">Supprimer</a>
+                        <a href="index.php?controller=Admin&action=deleteCategory&session=<?= $_SESSION['csrf_token']?>&id_categorie=<?= $categorie['id_categorie'] ?>">Supprimer</a>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -90,6 +92,7 @@
                     <span class="close">&times;</span>
                     <h2>Ajouter un Modèle</h2>
                     <form method="POST" action="index.php?controller=Admin&action=createModele" class="form-cars-create" id="formModele">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <label for="nom">Nom du modèle :</label>
                         <input type="text" id="nom" name="nom" required>
                         <button type="submit">Créer</button>
@@ -103,6 +106,7 @@
                     <span class="close closeUpdate">&times;</span>
                     <h2>Modifier un Modèle</h2>
                     <form method="POST" action="index.php?controller=Admin&action=updateModele" class="form-update-admin">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <input type="hidden" id="edit_id_modele" name="id_modele">
                         <label for="edit_nom_modele">Nom du modèle :</label>
                         <input type="text" id="edit_nom_modele" name="nom" required>
@@ -121,7 +125,7 @@
                             data-nom="<?= htmlspecialchars($modele['nom'], ENT_QUOTES) ?>">
                             Modifier
                         </button>
-                        <a href="index.php?controller=Admin&action=deleteModele&id_modele=<?= $modele['id_modele'] ?>">Supprimer</a>
+                        <a href="index.php?controller=Admin&action=deleteModele&session=<?= $_SESSION['csrf_token']?>&id_modele=<?= $modele['id_modele'] ?>">Supprimer</a>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -139,6 +143,7 @@
                     <span class="close">&times;</span>
                     <h2>Ajouter une Marque</h2>
                     <form method="POST" action="index.php?controller=Admin&action=createMarque" class="form-cars-create" id="formMarque">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <label for="marque_nom">Nom de la marque :</label>
                         <input type="text" id="marque_nom" name="nom" required>
                         <button type="submit">Créer</button>
@@ -152,6 +157,7 @@
                     <span class="close closeUpdate">&times;</span>
                     <h2>Modifier une Marque</h2>
                     <form method="POST" action="index.php?controller=Admin&action=updateMarque" class="form-update-admin">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <input type="hidden" id="edit_id_marque" name="id_marque">
                         <label for="edit_nom_marque">Nom de la marque :</label>
                         <input type="text" id="edit_nom_marque" name="nom" required>
@@ -170,7 +176,7 @@
                             data-nom="<?= htmlspecialchars($marque['nom'], ENT_QUOTES) ?>">
                             Modifier
                         </button>
-                        <a href="index.php?controller=Admin&action=deleteMarque&id_marque=<?= $marque['id_marque'] ?>">Supprimer</a>
+                        <a href="index.php?controller=Admin&action=deleteMarque&session=<?= $_SESSION['csrf_token']?>&id_marque=<?= $marque['id_marque'] ?>">Supprimer</a>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -188,6 +194,7 @@
                     <span class="close">&times;</span>
                     <h2>Ajouter un Carburant</h2>
                     <form method="POST" action="index.php?controller=Admin&action=createCarburant" class="form-cars-create" id="formCarburant">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <label for="carburant_nom">Type de carburant :</label>
                         <input type="text" id="carburant_nom" name="type" required>
                         <button type="submit">Créer</button>
@@ -201,6 +208,7 @@
                     <span class="close closeUpdate">&times;</span>
                     <h2>Modifier un Carburant</h2>
                     <form method="POST" action="index.php?controller=Admin&action=updateCarburant" class="form-update-admin">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <input type="hidden" id="edit_id_carburant" name="id_carburant">
                         <label for="edit_type_carburant">Type de carburant :</label>
                         <input type="text" id="edit_type_carburant" name="type" required>
@@ -219,7 +227,7 @@
                             data-carburant="<?= htmlspecialchars($carburant['type'], ENT_QUOTES) ?>">
                             Modifier
                         </button>
-                        <a href="index.php?controller=Admin&action=deleteCarburant&id_carburant=<?= $carburant['id_carburant'] ?>">Supprimer</a>
+                        <a href="index.php?controller=Admin&action=deleteCarburant&session=<?= $_SESSION['csrf_token']?>&id_carburant=<?= $carburant['id_carburant'] ?>">Supprimer</a>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -237,6 +245,7 @@
                     <span class="close">&times;</span>
                     <h2>Ajouter une Transmission</h2>
                     <form method="POST" action="index.php?controller=Admin&action=createTransmission" class="form-cars-create" id="formTransmission">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <label for="transmission_nom">Type de transmission :</label>
                         <input type="text" id="transmission_nom" name="type" required>
                         <button type="submit">Créer</button>
@@ -250,6 +259,7 @@
                     <span class="close closeUpdate">&times;</span>
                     <h2>Modifier une Transmission</h2>
                     <form method="POST" action="index.php?controller=Admin&action=updateTransmission" class="form-update-admin">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <input type="hidden" id="edit_id_transmission" name="id_transmission">
                         <label for="edit_type_transmission">Type de transmission :</label>
                         <input type="text" id="edit_type_transmission" name="type" required>
@@ -268,7 +278,7 @@
                             data-transmission="<?= htmlspecialchars($transmission['type'], ENT_QUOTES) ?>">
                             Modifier
                         </button>
-                        <a href="index.php?controller=Admin&action=deleteTransmission&id_transmission=<?= $transmission['id_transmission'] ?>">Supprimer</a>
+                        <a href="index.php?controller=Admin&action=deleteTransmission&session=<?= $_SESSION['csrf_token']?>&id_transmission=<?= $transmission['id_transmission'] ?>">Supprimer</a>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -286,6 +296,7 @@
                     <span class="close">&times;</span>
                     <h2>Ajouter un Nombre de places</h2>
                     <form method="POST" action="index.php?controller=Admin&action=createPlaces" class="form-cars-create" id="formPlaces">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <label for="places_nombre">Nombre de places :</label>
                         <input type="number" id="places_nombre" name="nombre" required>
                         <button type="submit">Créer</button>
@@ -299,6 +310,7 @@
                     <span class="close closeUpdate">&times;</span>
                     <h2>Modifier le Nombre de places</h2>
                     <form method="POST" action="index.php?controller=Admin&action=updatePlaces" class="form-update-admin">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <input type="hidden" id="edit_id_places" name="id_places">
                         <label for="edit_nombre_places">Nombre de places :</label>
                         <input type="number" id="edit_nombre_places" name="nombre" required>
@@ -317,7 +329,7 @@
                             data-nombre="<?= htmlspecialchars($place['nombre'], ENT_QUOTES) ?>">
                             Modifier
                         </button>
-                        <a href="index.php?controller=Admin&action=deletePlaces&id_places=<?= $place['id_places'] ?>">Supprimer</a>
+                        <a href="index.php?controller=Admin&action=deletePlaces&session=<?= $_SESSION['csrf_token']?>&id_places=<?= $place['id_places'] ?>">Supprimer</a>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -334,6 +346,7 @@
                     <span class="close">&times;</span>
                     <h2>Ajouter une Couleur</h2>
                     <form method="POST" action="index.php?controller=Admin&action=createCouleur" class="form-cars-create" id="formCouleur">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <label for="couleur_nom">Nom de la couleur :</label>
                         <input type="text" id="couleur_nom" name="nom" required>
                         <button type="submit">Créer</button>
@@ -347,6 +360,7 @@
                     <span class="close closeUpdate">&times;</span>
                     <h2>Modifier la Couleur</h2>
                     <form method="POST" action="index.php?controller=Admin&action=updateCouleur" class="form-update-admin">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <input type="hidden" id="edit_id_couleur" name="id_couleur">
                         <label for="edit_nom_couleur">Nom de la couleur :</label>
                         <input type="text" id="edit_nom_couleur" name="nom" required>
@@ -362,10 +376,10 @@
                         <button class="btn-edit"
                             data-type="couleur"
                             data-id="<?= $couleur['id_couleur'] ?>"
-                            data-nom-couleur="<?= htmlspecialchars($couleur['nom'], ENT_QUOTES) ?>">
+                            data-nom="<?= htmlspecialchars($couleur['nom'], ENT_QUOTES) ?>">
                             Modifier
                         </button>
-                        <a href="index.php?controller=Admin&action=deleteCouleur&id_couleur=<?= $couleur['id_couleur'] ?>">Supprimer</a>
+                        <a href="index.php?controller=Admin&action=deleteCouleur&session=<?= $_SESSION['csrf_token']?>&id_couleur=<?= $couleur['id_couleur'] ?>">Supprimer</a>
                     </li>
                 <?php endforeach; ?>
             </ul>

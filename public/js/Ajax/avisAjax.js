@@ -4,6 +4,7 @@ document.getElementById('avisForm').addEventListener('submit', function (e) {
     const rate = parseInt(document.getElementById('rate').value);
     const comment = document.getElementById('comment').value;
     const idVehicule = new URLSearchParams(window.location.search).get("id_vehicule");
+    const token = document.querySelector('input[name="csrf_token"]').value;
 
     if (!idVehicule) {
         console.error('ID véhicule introuvable dans l\'URL');
@@ -12,7 +13,8 @@ document.getElementById('avisForm').addEventListener('submit', function (e) {
 
     const data = {
         rate: rate,
-        comment: comment
+        comment: comment,
+        csrf_token: token
     };
 
     const url = `index.php?controller=Avis&action=create&id_vehicule=${idVehicule}`;
@@ -60,8 +62,6 @@ document.querySelectorAll('.star').forEach(star => {
     star.addEventListener('click', function () {
         const rating = this.getAttribute('data-value');
         document.getElementById('rate').value = rating;
-
-        // Mettre à jour l'apparence des étoiles (colorier jusqu'à celle cliquée)
         document.querySelectorAll('.star').forEach(s => {
             const value = parseInt(s.getAttribute('data-value'));
             if (value <= rating) {

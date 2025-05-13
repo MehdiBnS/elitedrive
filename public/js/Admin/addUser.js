@@ -1,7 +1,8 @@
 document.getElementById('createUserForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    const formData = new FormData(this);
+    const form = this; 
+    const formData = new FormData(form);
 
     document.getElementById('statusMessage').textContent = "Envoi en cours...";
 
@@ -13,7 +14,7 @@ document.getElementById('createUserForm').addEventListener('submit', function(ev
     .then(data => {
         if (data.success) {
             document.getElementById('statusMessage').textContent = "Utilisateur ajouté avec succès!";
-            formData.reset();
+            form.reset(); 
         } else {
             document.getElementById('statusMessage').textContent = "Erreur lors de l'ajout de l'utilisateur.";
         }

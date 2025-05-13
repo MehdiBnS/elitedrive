@@ -20,17 +20,6 @@ class TransmissionModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-    public function displayOne($id_transmission)
-    {
-        try {
-            $this->request = $this->connection->prepare("SELECT * FROM transmission WHERE id_transmission = :id_transmission");
-            $this->request->bindValue(':id_transmission', $id_transmission);
-            $this->request->execute();
-            return $this->request->fetch();
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
     public function create(Transmission $transmission)
     {
         try {

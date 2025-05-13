@@ -8,6 +8,11 @@ body {
 
 }
 
+.flatpickr-calendar {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+
 .loading-container {
     position: fixed;
     top: 0;
@@ -31,7 +36,9 @@ body {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 
@@ -822,7 +829,6 @@ textarea.form-input-contact {
 
 #wrapper-about p,
 #wrapper-about h2 {
-    font-size: 25px;
     margin: 10px;
     text-align: center;
 }
@@ -1212,7 +1218,7 @@ textarea.form-input-contact {
     border: 2px solid red;
     opacity: 0.7;
     position: relative;
-    background-color: rgb(0, 0, 0, 0.95);
+    background-color: rgba(223, 19, 19, 0.95);
 }
 
 .maintenance-vehicule-card::before {
@@ -1221,6 +1227,26 @@ textarea.form-input-contact {
     top: 5px;
     right: 5px;
     background-color: red;
+    color: white;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.loue-vehicule-card {
+    border: 2px solid darkgoldenrod;
+    opacity: 0.7;
+    position: relative;
+    background-color: rgba(216, 158, 10, 0.95);
+    color: white;
+}
+
+.loue-vehicule-card::before {
+    content: "Loué";
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: darkgoldenrod;
     color: white;
     font-size: 12px;
     padding: 2px 6px;
@@ -1405,11 +1431,12 @@ textarea.form-input-contact {
     padding: 20px;
     border-radius: 20px;
 }
+
 .avis-item p {
     border-left: 1px solid white;
     padding-left: 10px;
     font-size: 16px;
-    
+
 }
 
 .avis-item strong {
@@ -1709,6 +1736,18 @@ textarea.form-input-contact {
     transition: border-color 0.3s ease;
 }
 
+.form-group-user input[type="password"] {
+    position: relative;
+}
+#togglePassword {
+    position: absolute;
+    top: 45%;
+    right: 33%;
+    cursor: pointer;
+
+}
+
+
 .form-group-user input:focus {
     border-color: darkgoldenrod;
     outline: none;
@@ -1895,7 +1934,7 @@ textarea.form-input-contact {
     cursor: not-allowed;
 }
 
-.form-reservation-demande input[type="date"],
+
 .form-reservation-demande select {
     appearance: none;
     -webkit-appearance: none;
@@ -1905,7 +1944,6 @@ textarea.form-input-contact {
     background-size: 16px 16px;
     padding-right: 40px;
 }
-
 .form-reservation-demande textarea {
     resize: vertical;
     min-height: 100px;
@@ -2064,6 +2102,7 @@ textarea.form-input-contact {
     transform: translateY(-5px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     color: darkgoldenrod;
+    background: transparent;
 }
 
 .admin-card-backoffice p {
@@ -2259,10 +2298,13 @@ textarea.form-input-contact {
 .order-admin button:hover {
     background-color: #b8860b;
 }
+
 .background-wrapper {
     position: relative;
-    height: auto; /* Vous pouvez ajuster la hauteur selon vos besoins */
-    overflow: hidden; /* S'assure que l'image ne dépasse pas du conteneur */
+    height: auto;
+    /* Vous pouvez ajuster la hauteur selon vos besoins */
+    overflow: hidden;
+    /* S'assure que l'image ne dépasse pas du conteneur */
 }
 
 .background-image {
@@ -2274,8 +2316,10 @@ textarea.form-input-contact {
     background-size: cover;
     background-position: center;
     filter: blur(5px);
-    z-index: 0; /* Placer l'image derrière le contenu */
+    z-index: 0;
+    /* Placer l'image derrière le contenu */
 }
+
 .container-admin-one {
     margin: 0% auto;
     background-color: rgb(0, 0, 0, 0.75);
@@ -2288,6 +2332,7 @@ textarea.form-input-contact {
     min-height: 70vh;
 
 }
+
 .order-admin-one {
     display: flex;
     flex-direction: column;
@@ -2321,6 +2366,7 @@ textarea.form-input-contact {
     overflow: hidden;
     object-fit: cover;
 }
+
 .order-admin-one a {
     text-decoration: none;
     color: white;
@@ -2331,6 +2377,7 @@ textarea.form-input-contact {
     padding: 10px;
     border-radius: 10px;
 }
+
 .order-admin-one-button {
     display: flex;
     justify-content: center;
@@ -2355,12 +2402,14 @@ textarea.form-input-contact {
     margin-bottom: 20px;
     width: 100%;
 }
-.order-admin-button{
+
+.order-admin-button {
     width: 20%;
     display: flex;
     justify-content: center;
     justify-content: space-around;
 }
+
 .order-admin-button a {
     gap: 70px;
 
@@ -2389,6 +2438,7 @@ textarea.form-input-contact {
     width: 5%;
 
 }
+
 .btn-edit {
     width: 100%;
     background-color: darkgoldenrod;
@@ -2588,11 +2638,13 @@ textarea.form-input-contact {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
 .form-update-admin textarea {
     resize: vertical;
     min-height: 100px;
 
 }
+
 .form-update-admin select {
     cursor: pointer;
 }

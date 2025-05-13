@@ -40,7 +40,7 @@
                     <td><?= empty($a->commentaire) ? 'Aucun commentaire' : htmlspecialchars($a->commentaire) ?></td>
                     <td><?= htmlspecialchars($a->date_creation) ?></td>
                     <td>
-                        <a href="index.php?controller=Admin&action=deleteAvis&id_avis=<?= htmlspecialchars($a->id_avis) ?>">Supprimer</a>
+                        <a href="index.php?controller=Admin&action=deleteAvis&session=<?= $_SESSION['csrf_token'] ?>&id_avis=<?= htmlspecialchars($a->id_avis) ?>">Supprimer</a>
                     </td>
                     <td>
                         <a href="index.php?controller=Admin&action=orderAvisOne&id_avis=<?= htmlspecialchars($a->id_avis) ?>">Afficher</a>
@@ -51,7 +51,11 @@
     </div>
 <?php else: ?>
     <div class="order-admin">
-        Aucun avis trouvé.
+        <div class="order-admin-button">
+            <a href="index.php?controller=Admin&action=backOffice">Retour</a>
+            Aucun avis trouvé.
+        </div>
+      
     </div>
 <?php endif; ?>
 <?php $scripts = ["admin/searchAvis"]; ?>

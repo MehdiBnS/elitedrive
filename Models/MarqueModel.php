@@ -18,17 +18,6 @@ class MarqueModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-    public function displayOne($id_marque)
-    {
-        try {
-            $this->request = $this->connection->prepare("SELECT * FROM marque WHERE id_marque = :id_marque");
-            $this->request->bindValue(':id_marque', $id_marque);
-            $this->request->execute();
-            return $this->request->fetch();
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
     public function create(Marque $marque)
     {
         try {
@@ -59,20 +48,6 @@ class MarqueModel extends DbConnect
         $this->request = $this->connection->prepare("DELETE FROM marque WHERE id_marque = :id_marque");
         $this->request->bindValue(":id_marque", $id_marque, PDO::PARAM_INT);
         return $this->request->execute();
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
-    public function search($searchMarque)
-    {
-        try {
-            if (empty($searchMarque)) {
-                return [];
-            }
-            $this->request = $this->connection->prepare("SELECT * FROM marque WHERE nom LIKE :searchMarque");
-            $this->request->bindValue(':searchMarque', '%' . $searchMarque . '%', PDO::PARAM_STR);
-            $this->request->execute();
-            return $this->request->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }

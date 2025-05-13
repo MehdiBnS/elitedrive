@@ -1,7 +1,9 @@
 document.getElementById('createCarForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const loadingContainer = document.querySelector(".loading-container");
-    const formData = new FormData(this);
+
+    const form = this
+    const formData = new FormData(form);
 
     loadingContainer.style.display = "flex";
 
@@ -15,7 +17,7 @@ document.getElementById('createCarForm').addEventListener('submit', function(eve
         loadingContainer.style.display = "none";
         if (data.success) {
             document.getElementById('statusMessage').textContent = "Véhicule ajouté avec succès!";
-            formData.reset();
+            form.reset();
         } else {
             document.getElementById('statusMessage').textContent = "Erreur lors de l'ajout du véhicule.";
         }

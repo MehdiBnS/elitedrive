@@ -9,7 +9,7 @@ use elitedrive\Entities\Demande_Reservation;
 
 class Demande_ReservationModel extends DbConnect
 {
-    // Afficher toutes les demandes de réservation
+
     public function displayAll()
     {
         try {
@@ -20,7 +20,6 @@ class Demande_ReservationModel extends DbConnect
         }
     }
 
-    // Afficher une seule demande par son ID
     public function displayOne($id_demande)
     {
         try {
@@ -34,7 +33,6 @@ class Demande_ReservationModel extends DbConnect
         }
     }
 
-    // Afficher les demandes par utilisateur
     public function displayByIdUser($id_utilisateur)
     {
         try {
@@ -46,8 +44,6 @@ class Demande_ReservationModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-
-    // Afficher les demandes par véhicule
     public function displayByIdCar($id_vehicule)
     {
         try {
@@ -60,7 +56,6 @@ class Demande_ReservationModel extends DbConnect
         }
     }
 
-    // Créer une nouvelle demande de réservation
     public function create(Demande_Reservation $demande)
     {
         try {
@@ -84,7 +79,6 @@ class Demande_ReservationModel extends DbConnect
         }
     }
 
-    // Mettre à jour une demande de réservation
     public function update(Demande_Reservation $demande)
     {
         try {
@@ -123,21 +117,6 @@ class Demande_ReservationModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-
-
-    // Supprimer une demande par ID
-    public function delete($id_demande)
-    {
-        try {
-            $this->request = $this->connection->prepare("DELETE FROM demande_reservation WHERE id_demande_reservation = :id_demande");
-            $this->request->bindValue(":id_demande", $id_demande, PDO::PARAM_INT);
-            return $this->request->execute();
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
-
-    // Supprimer toutes les demandes d'un utilisateur
     public function deleteByIdUser($id_utilisateur)
     {
         try {
@@ -148,8 +127,6 @@ class Demande_ReservationModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-
-    // Recherche une demande de réservation par message
     public function search($search)
     {
         try {

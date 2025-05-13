@@ -18,8 +18,10 @@
         </div>
 
         <div class="delete-confirm">
-            <p>Si vous êtes certain(e) de vouloir supprimer votre compte, cliquez sur le bouton ci-dessous.</p>
-            <a class="delete-btn" href="index.php?controller=Utilisateur&action=delete&id_utilisateur=<?= $_SESSION['id_utilisateur'] ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ?')">Supprimer mon compte</a>
+            <form action="index.php?controller=Utilisateur&action=delete&id_utilisateur=<?= $_SESSION['id_utilisateur'] ?>" onsubmit="return confirm('Souhaitez-vous vraiment supprimer votre compte ?')">
+                <input type="hidden" name="csrf_token" value="<?= $token ?>">
+                <button class="delete-btn" type="submit">Supprimer</button>
+            </form>
         </div>
 
         <p class="info-footer">

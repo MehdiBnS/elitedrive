@@ -19,17 +19,6 @@ class PlacesModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-    public function displayOne($id_places)
-    {
-        try {
-            $this->request = $this->connection->prepare("SELECT * FROM places WHERE id_places = :id_places");
-            $this->request->bindValue(':id_places', $id_places);
-            $this->request->execute();
-            return $this->request->fetch();
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
     public function create(Places $places)
     {
         try {

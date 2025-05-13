@@ -1,3 +1,6 @@
+<?php if (isset($_GET['session']) && $_GET['session'] === 'expired'): ?>
+    <script>alert("Votre session a expiré en raison d'une inactivité prolongée. Veuillez vous reconnecter.");</script>
+<?php endif; ?>
 <div id="container-img">
     <img src="../public/img/home/HeaderFond.jpg" alt="Voiture de luxe black and white">
     <div>
@@ -24,14 +27,13 @@
         <h2>Nos méthodes de location</h2>
         <p>Nous mettons à votre disposition un processus de réservation simple et rapide. Il vous suffit de remplir notre formulaire en ligne, en spécifiant vos besoins et préférences, et nous reviendrons vers vous dans les plus brefs délais avec une solution sur mesure pour répondre à vos exigences.</p>
 
-        <h2>Nos tarifs</h2>
-        <p>Nos tarifs sont conçus pour offrir flexibilité et transparence. Nous proposons une tarification au kilomètre, ainsi que des forfaits adaptés à vos besoins pour des escapades prolongées. Voici nos principales offres :</p>
+        <h2>Nos offres</h2>
+        <p>Nos forfaits sont conçus pour offrir flexibilité et transparence. Nous proposons un forfait au kilomètre, ainsi que des forfaits adaptés à vos besoins pour des escapades prolongées. Voici nos principales offres :</p>
         <ul>
-            <li><span>Forfait 5000 km</span> : Deux semaines de location avec 5000 km inclus, à partir de <span>1000€</span>.</li>
-            <li><span>Forfait 10000 km</span> : Deux semaines avec 10000 km, à partir de <span>1500€</span>.</li>
-            <li><span>Tarifs à la journée</span> : À partir de <span>200€</span> par jour pour nos véhicules de luxe.</li>
-            <li><span>Tarifs à la semaine</span> : À partir de <span>1200€</span> pour une semaine complète, selon la catégorie du véhicule.</li>
-            <li><span>Tarifs au mois</span> : À partir de <span>4000€</span> par mois, pour ceux qui souhaitent prolonger leur expérience.</li>
+            <li><span>Forfait KM</span> : Nos véhicules peuvent êtres loués jusqu'à 10000 Km, parfait pour les voyages !</li>
+            <li><span>Forfait à la journée</span> : Profitez jusqu'à 6 jours de locations pour vos événements, mariages, déplacements...</li>
+            <li><span>Forfait à la semaine</span> : Durant 3 longues semaines le véhicule sera entre vos mains, histoire de passer d'excellentes vacances </li>
+            <li><span>Forfait au mois</span> : Pour une durée maximum de 6 mois entier, le véhicule fera partie pendant la moitié d'une année une personne de votre famille </li>
         </ul>
         <p>Chez <span>Elite Drive</span>, nous vous offrons le luxe sur mesure, pour que chaque instant sur la route devienne un moment inoubliable.</p>
     </div>

@@ -20,6 +20,8 @@
     <p><a href="index.php?controller=Home&action=contactAction" class="footer-contact">Formulaire de contact</a></p>
   </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 <?php
 if (isset($scripts)) {
     foreach ($scripts as $script) {
@@ -33,9 +35,9 @@ if (isset($scripts)) {
     }
 }
 ?>
+
 <script src="../public/js/burger.js"></script>
 <script src="../public/js/loadPage.js"></script>
-
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 

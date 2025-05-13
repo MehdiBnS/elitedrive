@@ -3,13 +3,6 @@
 namespace elitedrive\Controllers;
 
 use elitedrive\Models\VehiculeModel;
-use elitedrive\Entities\Vehicule;
-use elitedrive\Models\ModeleModel;
-use elitedrive\Models\MarqueModel;
-use elitedrive\Models\CarburantModel;
-use elitedrive\Models\TransmissionModel;
-use elitedrive\Models\PlacesModel;
-use elitedrive\Models\CouleurModel;
 use elitedrive\Models\CategorieModel;
 use elitedrive\Models\AvisModel;
 
@@ -20,17 +13,13 @@ class VehiculeController extends Controller
       $vehiculeModel = new VehiculeModel();
       $categorieModel = new CategorieModel();
       $avisModel = new AvisModel();
-
       $categorie = $categorieModel->displayAll();
       $options = $vehiculeModel->displayOptions();
-
       $id_categorie = $_GET['id_categorie'] ?? null;
       $tri = $_GET['tri'] ?? null;
-
       $vehiculeCategorie = null;
       $vehicule = [];
       $vehiculeSearch = null;
-
       $isSearch = !empty($_GET['search']) || !empty($_GET['marque']) || !empty($_GET['modele']) ||
          !empty($_GET['categorie']) || !empty($_GET['carburant']) || !empty($_GET['transmission']) ||
          !empty($_GET['places']) || !empty($_GET['couleur']);
@@ -68,7 +57,6 @@ class VehiculeController extends Controller
             $vehicule = $vehiculeModel->displayAll();
          }
       }
-
       $notesByVehicule = [];
       $vehiculesToNote = !empty($vehiculeCategorie) ? $vehiculeCategorie : $vehicule;
 
@@ -81,7 +69,6 @@ class VehiculeController extends Controller
             $somme = array_sum($vehiculeNotes);
             $moyenne = round($somme / count($vehiculeNotes), 1);
          }
-
          $notesByVehicule[$id_vehicule] = $moyenne;
       }
 
@@ -95,12 +82,6 @@ class VehiculeController extends Controller
       ]);
    }
 
-
-
-
-
-
-
    public function showCarOne()
    {
       if (isset($_GET['id_vehicule']) && !empty($_GET['id_vehicule'])) {
@@ -109,33 +90,11 @@ class VehiculeController extends Controller
          $vehicule = $vehiculeModel->displayOne($id_vehicule);
          $avisModel = new AvisModel();
          $avis = $avisModel->displayByIdCar($id_vehicule);
+         $token = $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
          if ($vehicule) {
-            $this->render('vehicule/showCarOne', ['vehicule' => $vehicule, 'avis' => $avis]);
+            $this->render('vehicule/showCarOne', ['vehicule' => $vehicule, 'avis' => $avis, 'token' => $token]);
          } else {
             $_SESSION['message'] = 'Véhicule introuvable.';
-            header('Location: index.php?controller=Vehicule&action=showCar');
-            exit();
-         }
-      } else {
-         $_SESSION['message'] = 'Error';
-         header('Location: index.php?controller=Vehicule&action=showCar');
-         exit();
-      }
-   }
-
-   public function showCarByCatégorie()
-   {
-      if (isset($_GET['id_categorie']) && !empty($_GET['id_categorie'])) {
-         $id_categorie = $_GET['id_categorie'];
-         $id_vehicule = $_GET['id_vehicule'];
-         $vehiculeModel = new VehiculeModel();
-         $vehicule = $vehiculeModel->displayByCategory($id_categorie);
-         $avisModel = new AvisModel();
-         $avis = $avisModel->displayByIdCar($id_vehicule);
-         if ($vehicule) {
-            $this->render('vehicule/showCarByCatégorie', ['vehicule' => $vehicule, 'avis' => $avis]);
-         } else {
-            $_SESSION['message'] = 'Catégorie de véhicule introuvable.';
             header('Location: index.php?controller=Vehicule&action=showCar');
             exit();
          }

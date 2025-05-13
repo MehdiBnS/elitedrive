@@ -9,7 +9,7 @@ class ContactController extends Controller
     public function newsletter()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = $_POST['email'] ?? '';
+            $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
 
             if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $mailModel = new MailsModel();
@@ -32,13 +32,11 @@ class ContactController extends Controller
 
     public function contactUtilisateur()
     {
-        header('Content-Type: application/json');
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nom = $_POST['nom'] ?? '';
-            $prenom = $_POST['prenom'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $message = $_POST['message'] ?? '';
+            $nom = htmlspecialchars($_POST['nom']);
+            $prenom = htmlspecialchars($_POST['prenom']);
+            $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+            $message = htmlspecialchars(($_POST['message']), ENT_NOQUOTES, 'UTF-8');
 
             if (!empty($nom) && !empty($prenom) && !empty($email) && !empty($message) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $mailModel = new MailsModel();

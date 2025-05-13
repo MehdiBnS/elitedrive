@@ -4,8 +4,8 @@
         <h1>Demande de réservation:
             <?php echo htmlspecialchars($demande->id_demande_reservation); ?> -
             <?php if ($demande->nom != null && $demande->prenom != null) : ?>
-            <?php echo htmlspecialchars($demande->nom); ?>
-            <?php echo htmlspecialchars($demande->prenom); ?>
+                <?php echo htmlspecialchars($demande->nom); ?>
+                <?php echo htmlspecialchars($demande->prenom); ?>
             <?php else : ?>
                 Utilisateur supprimer
             <?php endif; ?>
@@ -49,6 +49,7 @@
 
         <form action="index.php?controller=Admin&action=updateStatutDemande" method="POST">
             <div class="order-admin-one">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" readonly>
                 <input type="hidden" name="id_demande" value="<?php echo htmlspecialchars($demande->id_demande_reservation); ?>">
                 <input type="hidden" name="id_utilisateur" value="<?php echo htmlspecialchars($demande->id_utilisateur); ?>">
                 <input type="hidden" name="email" value="<?php echo htmlspecialchars($demande->email); ?>">

@@ -9,7 +9,6 @@ use elitedrive\Entities\Utilisateur;
 
 class UtilisateurModel extends DbConnect
 {
-    // Afficher tous les utilisateurs
     public function displayAll()
     {
         try {
@@ -20,7 +19,6 @@ class UtilisateurModel extends DbConnect
         }
     }
 
-    // Afficher un utilisateur par son ID
     public function displayOne($id_utilisateur)
     {
         try {
@@ -32,8 +30,6 @@ class UtilisateurModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-
-    // Créer un nouvel utilisateur
     public function create(Utilisateur $utilisateur)
     {
         try {
@@ -55,13 +51,14 @@ class UtilisateurModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-    public function checkEmailExists($email) {
+    public function checkEmailExists($email)
+    {
         try {
             $this->request = $this->connection->prepare("SELECT COUNT(*) FROM utilisateur WHERE email = :email");
             $this->request->bindParam(':email', $email);
             $this->request->execute();
             $count = $this->request->fetchColumn();
-            return $count > 0; 
+            return $count > 0;
         } catch (Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }
@@ -85,11 +82,7 @@ class UtilisateurModel extends DbConnect
         }
     }
 
-    
 
-
-
-    // Mettre à jour un utilisateur
     public function update(Utilisateur $utilisateur)
     {
         try {
@@ -114,7 +107,19 @@ class UtilisateurModel extends DbConnect
         }
     }
 
-    // Supprimer un utilisateur
+    public function updatePassword($id_utilisateur, $mot_de_passe_hash)
+    {
+        try {
+
+            $this->request = $this->connection->prepare("UPDATE utilisateur SET mot_de_passe = :mot_de_passe_hash WHERE id_utilisateur = :id_utilisateur");
+            $this->request->bindValue(':mot_de_passe_hash', $mot_de_passe_hash, PDO::PARAM_STR);
+            $this->request->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
+            return $this->request->execute();
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
+
     public function delete($id_utilisateur)
     {
         try {
@@ -130,7 +135,6 @@ class UtilisateurModel extends DbConnect
     {
         try {
             if (empty($searchUser)) {
-
             }
             $this->request = $this->connection->prepare("SELECT * FROM utilisateur WHERE nom LIKE :searchUser
                                                          OR prenom LIKE :searchUser
@@ -142,19 +146,6 @@ class UtilisateurModel extends DbConnect
             $this->request->bindValue(':searchUser', '%' . $searchUser . '%', PDO::PARAM_STR);
             $this->request->execute();
             return $this->request->fetchAll(PDO::FETCH_OBJ);
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
-
-    public function updatePassword($id_utilisateur, $mot_de_passe_hash)
-    {
-        try {
-
-            $this->request = $this->connection->prepare("UPDATE utilisateur SET mot_de_passe = :mot_de_passe_hash WHERE id_utilisateur = :id_utilisateur");
-            $this->request->bindValue(':mot_de_passe_hash', $mot_de_passe_hash, PDO::PARAM_STR);
-            $this->request->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
-            return $this->request->execute();
         } catch (Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }

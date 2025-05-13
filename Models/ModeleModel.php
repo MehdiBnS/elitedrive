@@ -19,17 +19,6 @@ class ModeleModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
-    public function displayOne($id_modele)
-    {
-        try {
-            $this->request = $this->connection->prepare("SELECT * FROM modele WHERE id_modele = :id_modele");
-            $this->request->bindValue(':id_modele', $id_modele);
-            $this->request->execute();
-            return $this->request->fetch();
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
     public function create(Modele $modele)
     {
         try {
@@ -60,20 +49,6 @@ class ModeleModel extends DbConnect
         $this->request = $this->connection->prepare("DELETE FROM modele WHERE id_modele = :id_modele");
         $this->request->bindValue(":id_modele", $id_modele, PDO::PARAM_INT);
         return $this->request->execute();
-        } catch (Exception $e) {
-            die("Erreur SQL : " . $e->getMessage());
-        }
-    }
-    public function search($searchModel)
-    {
-        try {
-            if (empty($searchModel)) {
-                return [];
-            }
-            $this->request = $this->connection->prepare("SELECT * FROM modele WHERE nom LIKE :searchModele");
-            $this->request->bindValue(':searchModele', '%' . $searchModel . '%', PDO::PARAM_STR);
-            $this->request->execute();
-            return $this->request->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }

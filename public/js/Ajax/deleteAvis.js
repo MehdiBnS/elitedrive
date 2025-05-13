@@ -4,6 +4,7 @@ document.querySelectorAll('.supprimer').forEach(function (button) {
 
         const idAvis = this.dataset.idAvis;
         const idUtilisateur = this.dataset.idUtilisateur;
+        const csrf_token = this.dataset.csrf_token;
 
         let url;
         let data;
@@ -13,10 +14,12 @@ document.querySelectorAll('.supprimer').forEach(function (button) {
             data = new FormData();
             data.append('id_utilisateur', idUtilisateur);
             data.append('id_avis', idAvis);
+            data.append('csrf_token', csrf_token);
         } else if (idAvis) {
             url = 'index.php?controller=Avis&action=delete&id_avis=' + idAvis;
             data = new FormData();
             data.append('id_avis', idAvis);
+            data.append('csrf_token', csrf_token);
         }
 
         fetch(url, {

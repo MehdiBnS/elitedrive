@@ -100,9 +100,9 @@
 
         <div id="nav-car">
             <a href="index.php?controller=Vehicule&action=showCar">Voir tous</a>
-            <a href="index.php?controller=Vehicule&action=showCar&tri=nouveaute">Nouveauté</a>
-            <a href="index.php?controller=Vehicule&action=showCar&tri=prix_asc">Prix croissant</a>
-            <a href="index.php?controller=Vehicule&action=showCar&tri=prix_desc">Prix décroissant</a>
+            <a href="index.php?controller=Vehicule&action=showCar&tri=nouveaute">Nouveautés</a>
+            <a href="index.php?controller=Vehicule&action=showCar&tri=prix_asc">Prix croissants</a>
+            <a href="index.php?controller=Vehicule&action=showCar&tri=prix_desc">Prix décroissants</a>
         </div>
 
 
@@ -131,7 +131,12 @@
                 <!-- Liste des véhicules -->
                 <div class="liste-car">
                     <?php foreach ($vehiculeCategorie as $vehicule) : ?>
-                        <div class="vehicule-card<?= ($vehicule->statut === 'Maintenance') ? ' maintenance-vehicule-card' : '' ?>">
+                        <div class="vehicule-card  
+                        <?= ($vehicule->statut === 'Maintenance') ? 'maintenance-vehicule-card' : '' ?>
+                         <?= ($vehicule->statut === 'Loué') ? 'loue-vehicule-card' : '' ?>">
+  
+
+
 
                             <?php if ($vehicule->photo != null) : ?>
                                 <img src="<?= htmlspecialchars($vehicule->photo) ?>" alt="<?= htmlspecialchars($vehicule->nom) ?>" width="200">
@@ -196,7 +201,9 @@
                 <div class="liste-car">
 
                     <?php foreach ($vehiculeSearch as $vehiculeFind) : ?>
-                        <div class="vehicule-card<?= ($vehiculeFind['statut'] === 'Maintenance') ? ' maintenance-vehicule-card' : '' ?>">
+                        <div class="vehicule-card
+                        <?= ($vehiculeFind['statut'] === 'Maintenance') ? ' maintenance-vehicule-card' : '' ?>
+                        <?= ($vehiculeFind['statut'] === 'Loué') ? ' loue-vehicule-card' : '' ?>">
 
                             <?php if (!empty($vehiculeFind['photo'])) : ?>
                                 <img src="<?= htmlspecialchars($vehiculeFind['photo']) ?>" alt="<?= htmlspecialchars($vehiculeFind['nom']) ?>" width="200">
@@ -228,7 +235,9 @@
             <div id="vehicule-section">
                 <div class="liste-car">
                     <?php foreach ($vehicule as $vehicules) : ?>
-                        <div class="vehicule-card<?= ($vehicules->statut === 'Maintenance') ? ' maintenance-vehicule-card' : '' ?>">
+                        <div class="vehicule-card
+                        <?= ($vehicules->statut === 'Maintenance') ? ' maintenance-vehicule-card' : '' ?>
+                        <?= ($vehicules->statut === 'Loué') ? ' loue-vehicule-card' : '' ?>">
 
 
                             <?php if ($vehicules->photo != null) : ?>

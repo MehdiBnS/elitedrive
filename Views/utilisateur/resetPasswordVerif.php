@@ -13,6 +13,7 @@
         <?php endif; ?>
 
         <label for="id_utilisateur">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($token) ?>">
             <input type="hidden" id="id_utilisateur" name="id_utilisateur" value="<?= $utilisateur->id_utilisateur ?>" required disabled>
 
             <!-- Ancien mot de passe -->

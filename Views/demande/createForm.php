@@ -18,6 +18,7 @@
             <input type="hidden" id="prix_jour" value="<?= floatval($vehicule->prix_jour) ?>">
             <input type="hidden" id="prix_semaine" value="<?= floatval($vehicule->prix_semaine) ?>">
             <input type="hidden" id="prix_mois" value="<?= floatval($vehicule->prix_mois) ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($token) ?>">
 
             <div class="form-reservation-columns">
                 <!-- Bloc 1 : Infos utilisateur et véhicule -->
@@ -69,12 +70,12 @@
                 <div class="form-reservation-right">
                     <div class="form-reservation-demande">
                         <label for="date_debut">*Date de début :</label>
-                        <input type="date" name="date_debut" id="date_debut" required>
+                        <input type="text" name="date_debut" id="date_debut" required>
                     </div>
 
                     <div class="form-reservation-demande">
                         <label for="date_fin">*Date de fin :</label>
-                        <input type="date" name="date_fin" id="date_fin" required>
+                        <input type="text" name="date_fin" id="date_fin" required>
                     </div>
 
                     <div class="form-reservation-demande">
@@ -90,7 +91,7 @@
 
                     <div class="form-reservation-demande">
                         <label for="quantite_forfait">*Quantité :</label>
-                        <input type="number" name="quantite_forfait" id="quantite_forfait" min="1" max="7" required>
+                        <input type="number" name="quantite_forfait" id="quantite_forfait" min="1" required>
                     </div>
 
                     <div class="form-reservation-demande">

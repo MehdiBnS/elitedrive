@@ -20,6 +20,12 @@
                 </a>
             </form>
         </div>
+        <?php if (isset($_SESSION['message'])) : ?>
+            <p style="color: green;"> <?= htmlspecialchars($_SESSION['message']) ?> </p>
+            <?php unset($_SESSION['message']); ?>
+        <?php else : ?>
+            <p></p>
+        <?php endif; ?>
         <table id="reserveTable">
             <thead>
                 <tr>
@@ -34,12 +40,16 @@
                     <th>Montant</th>
                     <th>Forfait</th>
                     <th>Date</th>
+                    <th>Statut</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($reservations as $reservation): ?>
-                    <tr>
+                    <?php
+                    $clear = $reservation->date_fin < date('Y-m-d H:i:s');
+                    ?>
+                    <tr style="<?= $clear ? 'background-color: #d3f9d8;' : '' ?>">
                         <td><?= htmlspecialchars($reservation->nom) ?></td>
                         <td><?= htmlspecialchars($reservation->prenom) ?></td>
                         <td><?= htmlspecialchars($reservation->email) ?></td>
@@ -52,8 +62,21 @@
                         <td><?= htmlspecialchars($reservation->forfait) ?></td>
                         <td><?= htmlspecialchars($reservation->date_debut) ?> au <?= htmlspecialchars($reservation->date_fin) ?></td>
                         <td>
+                            <form action="index.php?controller=Admin&action=updateReservationStatut" method="post">
+                                <input type="hidden" name="id_reservation" value="<?= htmlspecialchars($reservation->id_reservation) ?>">
+                                <input type="hidden" name="id_vehicule" value="<?= htmlspecialchars($reservation->id_vehicule) ?>">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" readonly>
+                                <select name="statut" class="statut-select" onchange="this.form.submit()">
+                                    <option value="Réserver" <?= $reservation->statut == 'Réserver' ? 'selected' : '' ?>>Réserver</option>
+                                    <option value="Loué" <?= $reservation->statut == 'Loué' ? 'selected' : '' ?>>Loué</option>
+                                    <option value="Maintenance" <?= $reservation->statut == 'Maintenance' ? 'selected' : '' ?>>Maintenance</option>
+                                    <option value="Disponible" <?= $reservation->statut == 'Disponible' ? 'selected' : '' ?>>Rendu</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td>
                             <form method="post" action="index.php?controller=Admin&action=createArchive" class="archive-form">
-
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" readonly>
                                 <input type="hidden" name="nom" value="<?= htmlspecialchars($reservation->nom) ?>">
                                 <input type="hidden" name="prenom" value="<?= htmlspecialchars($reservation->prenom) ?>">
                                 <input type="hidden" name="email" value="<?= htmlspecialchars($reservation->email) ?>">
@@ -66,7 +89,6 @@
                                 <input type="hidden" name="montant" value="<?= htmlspecialchars($reservation->montant) ?>">
                                 <input type="hidden" name="date" value="<?= htmlspecialchars($reservation->date_debut) ?>">
                                 <button type="submit" class="archive-btn">Archiver</button>
-
                             </form>
                         </td>
                     </tr>
@@ -76,7 +98,11 @@
     </div>
 <?php else: ?>
     <div class="order-admin">
-        Aucune réservation trouvée.
+    <div class="order-admin-button">
+                <a href="index.php?controller=Admin&action=backOffice">Retour</a>
+                Aucune réservation trouvée.
+            </div>
+      
     </div>
 <?php endif; ?>
 

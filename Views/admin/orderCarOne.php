@@ -90,7 +90,7 @@
                     </button>
                 </div>
                 <div class="order-admin-one">
-                    <a href="index.php?controller=Admin&action=deleteCar&id_vehicule=<?= htmlspecialchars($vehicule->id_vehicule) ?>">Supprimer</a>
+                    <a href="index.php?controller=Admin&action=deleteCar&session=<?= $_SESSION['csrf_token']?>&id_vehicule=<?= htmlspecialchars($vehicule->id_vehicule) ?>">Supprimer</a>
                 </div>
                 <div class="order-admin-one">
                     <a href="index.php?controller=Admin&action=orderCars">Retour</a>
@@ -105,6 +105,7 @@
 
                 <form method="POST" action="index.php?controller=Admin&action=updateCar" enctype="multipart/form-data" class="form-update-admin">
                     <input type="hidden" id="id_vehicule" name="id_vehicule" readonly>
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>" readonly>
 
                     <div class="form-group-admin">
                         <label for="nom">Nom du véhicule :</label>
