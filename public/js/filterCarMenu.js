@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
         filterContainer.classList.add('active');
         openBtn.style.display = 'none';
         vehiculeSection.style.filter = 'blur(5px)';
+        
 
     });
 
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
         filterContainer.classList.remove('active');
         openBtn.style.display = 'block';
         vehiculeSection.style.filter = 'blur(0px)';
+        vehiculeSection.style.borderSizing = 'border-none';
 
     });
 });

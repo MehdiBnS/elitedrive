@@ -162,6 +162,8 @@ class AdminController extends Controller
                     exit();
                 }
 
+
+
                 $mot_de_passe_hash = password_hash($mot_de_passe, PASSWORD_BCRYPT);
 
                 $utilisateur = new Utilisateur();
@@ -212,6 +214,15 @@ class AdminController extends Controller
                 $numero_telephone = $_POST['numero_telephone'];
                 $ville = $_POST['ville'];
                 $role = $_POST['role'];
+
+                $utilisateurModel = new UtilisateurModel();
+                $testMail = $utilisateurModel->displayOne($id_utilisateur);
+
+                if ($email !== $testMail->email && $utilisateurModel->checkEmailExists($email)) {
+                    $_SESSION['message'] = "L'email est déjà utilisé par un autre utilisateur.";
+                    header('Location: index.php?controller=Admin&action=orderUsers');
+                    exit();
+                }
                 $utilisateur = new Utilisateur();
                 $utilisateur->setId_utilisateur($id_utilisateur);
                 $utilisateur->setNom($nom);
@@ -220,6 +231,7 @@ class AdminController extends Controller
                 $utilisateur->setNumero_telephone($numero_telephone);
                 $utilisateur->setVille($ville);
                 $utilisateur->setRole($role);
+
                 $utilisateurModel = new UtilisateurModel();
                 $updateSuccess = $utilisateurModel->update($utilisateur);
 
@@ -1624,7 +1636,7 @@ class AdminController extends Controller
     public function orderDemande()
     {
         if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] == 1) {
-            $demandeReservationModel = new Demande_ReservationModel();
+            $demandeReservationModel = new Demande_reservationModel();
 
             $search = isset($_POST['search']) ? trim($_POST['search']) : '';
             $demandes = !empty($search)

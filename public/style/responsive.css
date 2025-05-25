@@ -2,6 +2,10 @@
 
     /*header */
 
+    header {
+        height: 200px;
+    }
+
     #navBar {
         display: none;
     }
@@ -45,6 +49,11 @@
         color: white;
     }
 
+    #nav-car a {
+        padding: 10px;
+        font-size: 13px;
+    }
+
     .icon-link:hover {
         transform: none;
         transition: none;
@@ -76,7 +85,7 @@
         gap: 60px;
         flex-direction: column;
         align-items: center;
-        transform: translateX(-130px);
+        transform: translateX(-80px);
     }
 
     #menuNav li {
@@ -329,13 +338,13 @@
     #container-filter.active {
         display: block;
         scroll-behavior: none;
-    
+
     }
 
     #container-filter.active #vehicule-section {
         filter: blur(5px);
-        
-    
+
+
     }
 
 
@@ -358,11 +367,12 @@
         display: none;
     }
 
-    /* showCarOne */ 
+    /* showCarOne */
     #avisForm textarea {
         width: 90%;
         height: 200px;
     }
+
     #avisForm button {
         width: 93%;
     }
@@ -372,6 +382,7 @@
         height: 15px;
         display: inline;
     }
+
     .avis-item {
         width: 80%;
     }
@@ -379,91 +390,99 @@
     /* createForm (demande de reservation) */
 
     /*createFrom (demande de reservation)*/
-.form-reservation-container h1 {
-    font-size: 25px;
-    font-weight: 600;
-    color: darkgoldenrod;
+    .form-reservation-container h1 {
+        font-size: 25px;
+        font-weight: 600;
+        color: darkgoldenrod;
 
-}
+    }
 
-.form-reservation-container h2 {
-    font-size: 15px;
-    font-weight: 500;
-    color: white;
-}
+    .form-reservation-container h2 {
+        font-size: 15px;
+        font-weight: 500;
+        color: white;
+    }
 
-.form-reservation-container p {
-    font-style: italic;
-    color: lightgray;
+    .form-reservation-container p {
+        font-style: italic;
+        color: lightgray;
 
-}
+    }
 
-.infos-demande-reserve {
-    padding: 10px;
+    .infos-demande-reserve {
+        padding: 10px;
 
-}
+    }
 
-.form-reservation-columns {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+    .form-reservation-columns {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
 
-}
+    }
 
-.form-reservation-left, .form-reservation-right {
-    max-width: 80%;
-}
-.form-reservation-demande button {
-    width: 80%;
-}
-.title-demande {
-    display: block;
-    border-bottom: solid 1px lightgray;
-    padding-bottom: 10px;
+    .form-reservation-left,
+    .form-reservation-right {
+        max-width: 80%;
+    }
 
-}
+    .form-reservation-demande button {
+        width: 80%;
+    }
 
-/* showProfile */
+    .title-demande {
+        display: block;
+        border-bottom: solid 1px lightgray;
+        padding-bottom: 10px;
 
-.profile-container {
-    display: flex;
-    flex-direction: column;
-}
+    }
 
-.profile-info {
-    width: 95%;
-    padding-bottom: 20px;
-}
+    /* showProfile */
 
-.accordions-container {
-    width: 100%;
-    padding: 10px;
-    
-}
-.form-user {
-    margin-left: 50px;
-    margin-right: 50px;
-    width: 80%;
-}
-.accordion-header {
-    width: 100%;
-    padding: 10px;
-    gap: 10px;
-}
-.accordion-item {
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+    }
 
-    padding: 10px;
-    gap: 10px;
-}
-.accordion-content {
-  padding: 40px;
+    .profile-info {
+        width: 95%;
+        padding-bottom: 20px;
+    }
 
-}
-/* connect / createAccount */
-#togglePassword {
-    right: 18%;
+    .accordions-container {
+        width: 100%;
+        padding: 10px;
+
+    }
+
+    .form-user {
+        margin-left: 50px;
+        margin-right: 50px;
+        width: 80%;
+    }
+
+    .accordion-header {
+        width: 100%;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .accordion-item {
+
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .accordion-content {
+        padding: 40px;
+
+    }
+
+    /* connect / createAccount */
+    #togglePassword {
+        right: 18%;
 
 
-}
+    }
 
 }

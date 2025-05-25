@@ -10,10 +10,10 @@ class DbConnect
     protected $connection;
     protected $request;
 
-    const SERVER = 'localhost';
-    const USER = 'root';
-    const PASSWORD = 'root';
-    const BASE = 'elitedrive';
+    const SERVER = 'sqlprive-pc2372-001.eu.clouddb.ovh.net:35167';
+    const USER = 'cefiidev1444';
+    const PASSWORD = 'n8Zi9FPu9';
+    const BASE = 'cefiidev1444';
 
     public function __construct()
     {

@@ -4,7 +4,7 @@
 namespace elitedrive\Entities;
 
 
-class Demande_reservation {
+class Demande_Reservation {
 
     private $id_demande_reservation;
     private $message;

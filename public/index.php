@@ -2,14 +2,18 @@
 // protection des attaques avec des id dession invalide ou innexistant
 // php sécurité session
 //https://www.php.net/manual/fr/session.security.ini.php
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 ini_set('session.use_strict_mode', 1);
 session_start();
 
 
 //https://www.tutorialspoint.com/php/php_csrf.htm
 //csrf token php
-if (empty($_SESSION['crsf_token'])) {
-    $_SESSION['crsf_token'] = bin2hex(random_bytes(32));
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
 

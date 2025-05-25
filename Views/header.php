@@ -37,7 +37,7 @@
                 <li class="listeMenu"><a class="lienMenu" href="index.php?controller=Home&action=homeAction">Accueil</a></li>
                 <li id="menuNosLocations" class="listeMenu">
                     <a class="lienMenu" href="#">Nos locations
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down" viewBox="0 0 24 24">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down" viewBox="0 0 24 24">
                             <path d="M6 9l6 6 6-6"></path>
                         </svg>
                     </a>

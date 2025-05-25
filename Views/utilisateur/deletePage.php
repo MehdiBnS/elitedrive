@@ -18,7 +18,7 @@
         </div>
 
         <div class="delete-confirm">
-            <form action="index.php?controller=Utilisateur&action=delete&id_utilisateur=<?= $_SESSION['id_utilisateur'] ?>" onsubmit="return confirm('Souhaitez-vous vraiment supprimer votre compte ?')">
+            <form method="POST" action="index.php?controller=Utilisateur&action=delete&id_utilisateur=<?= $_SESSION['id_utilisateur'] ?>" onsubmit="return confirm('Souhaitez-vous vraiment supprimer votre compte ?')">
                 <input type="hidden" name="csrf_token" value="<?= $token ?>">
                 <button class="delete-btn" type="submit">Supprimer</button>
             </form>

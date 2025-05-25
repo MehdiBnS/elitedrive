@@ -67,7 +67,7 @@ class UtilisateurController extends Controller
                 $message[] = "";
             }
 
-            
+
             $mot_de_passe_hash = password_hash($mot_de_passe, PASSWORD_DEFAULT);
 
             $utilisateurModel = new UtilisateurModel();
@@ -87,8 +87,11 @@ class UtilisateurController extends Controller
             $utilisateur->setVille($ville);
             $utilisateur->setRole($role);
 
-            $utilisateurModel = new UtilisateurModel();
             if ($utilisateurModel->create($utilisateur)) {
+
+                $lastInsertId = $utilisateurModel->getLastInsertId();
+
+                $utilisateur->setId_utilisateur($lastInsertId);
                 session_regenerate_id(true);
                 $_SESSION['id_utilisateur'] = $utilisateur->getId_utilisateur();
                 $_SESSION['email'] = $utilisateur->getEmail();
@@ -97,15 +100,15 @@ class UtilisateurController extends Controller
                 $_SESSION['nom'] = $utilisateur->getNom();
                 $_SESSION['prenom'] = $utilisateur->getPrenom();
                 $_SESSION['ville'] = $utilisateur->getVille();
-                $_SESSION['crsf_token'] = bin2hex(random_bytes(32));
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
                 $mailModel = new MailsModel();
                 $subject = "Bienvenue sur EliteDrive !";
                 $body = file_get_contents(__DIR__ . '/../Views/mails/subUt.php');
                 $to = $email;
                 $mailModel->sendMail($to, $subject, $body);
-                
-               
+
+
                 header('Location: index.php?controller=Utilisateur&action=showProfile');
                 exit();
             } else {
@@ -141,11 +144,11 @@ class UtilisateurController extends Controller
                 session_regenerate_id(true);
                 $_SESSION['id_utilisateur'] = $utilisateur->id_utilisateur;
                 $_SESSION['email'] = $utilisateur->email;
-                $_SESSION['role'] = $utilisateur->role;
+                $_SESSION['role'] = (int) $utilisateur->role;
                 $_SESSION['nom'] = $utilisateur->nom;
                 $_SESSION['prenom'] = $utilisateur->prenom;
                 $_SESSION['ville'] = $utilisateur->ville;
-                $_SESSION['crsf_token'] = bin2hex(random_bytes(32));
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 if ($_SESSION['role'] == 1) {
                     header('Location: index.php?controller=Admin&action=backoffice');
                 } else {
@@ -236,7 +239,7 @@ class UtilisateurController extends Controller
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-            if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])){
+            if (!isset($_POST['csrf_token'], $_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
                 header('Location: index.php?controller=Utilisateur&action=updateForm');
                 exit();
             }
@@ -259,7 +262,7 @@ class UtilisateurController extends Controller
             $utilisateurModel = new UtilisateurModel();
             $testMail = $utilisateurModel->displayOne($id_utilisateur);
 
-            if ($email !== $testMail->email() && $utilisateurModel->checkEmailExists($email)) {
+            if ($email !== $testMail->email && $utilisateurModel->checkEmailExists($email)) {
                 $_SESSION['message'] = "L'email est déjà utilisé par un autre utilisateur.";
                 header('Location: index.php?controller=Utilisateur&action=updateForm');
                 exit();
@@ -292,7 +295,7 @@ class UtilisateurController extends Controller
             exit();
         }
 
-        if (isset($_GET['id_utilisateur']) && intval($_GET['id_utilisateur']) === $_SESSION['id_utilisateur']) {
+        if (intval($_GET['id_utilisateur']) === intval($_SESSION['id_utilisateur'])) {
             $token = $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             $this->render('utilisateur/deletePage', ['token' => $token]);
         } else {
@@ -313,13 +316,14 @@ class UtilisateurController extends Controller
             exit();
         }
 
-        if (isset($_GET['id_utilisateur']) && intval($_GET['id_utilisateur']) === $_SESSION['id_utilisateur']) {
+        if (intval($_GET['id_utilisateur']) === intval($_SESSION['id_utilisateur'])){
             $id_utilisateur = intval($_GET['id_utilisateur']);
             $utilisateurModel = new UtilisateurModel();
 
             $demandeModel = new Demande_ReservationModel();
             $demandeModel->deleteByIdUser($id_utilisateur);
 
+            
             if ($utilisateurModel->delete($id_utilisateur)) {
                 $_SESSION['message'] = "Nous espérons vous revoir bientôt !";
                 session_unset();

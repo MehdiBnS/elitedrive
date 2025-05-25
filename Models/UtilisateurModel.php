@@ -30,6 +30,7 @@ class UtilisateurModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
+    
     public function create(Utilisateur $utilisateur)
     {
         try {
@@ -150,4 +151,7 @@ class UtilisateurModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
+    public function getLastInsertId() {
+    return $this->connection->lastInsertId(); 
+}
 }

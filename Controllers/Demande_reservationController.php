@@ -2,7 +2,7 @@
 
 namespace elitedrive\Controllers;
 
-use elitedrive\Entities\Demande_reservation;
+use elitedrive\Entities\Demande_Reservation;
 use elitedrive\Models\Demande_ReservationModel;
 use elitedrive\Models\UtilisateurModel;
 use elitedrive\Models\VehiculeModel;
@@ -35,7 +35,7 @@ class Demande_reservationController extends Controller
                     exit();
                 }
 
-                $token = $_SESSION['crsf_token'] = bin2hex(random_bytes(32));
+                $token = $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $this->render('demande/createForm', ['utilisateur' => $utilisateur, 'vehicule' => $vehicule, 'token' => $token]);
             } else {
                 header('Location: index.php?controller=Vehicule&action=showCar');
@@ -148,7 +148,7 @@ class Demande_reservationController extends Controller
                     exit();
                 }
                 
-                $demande = new Demande_reservation();
+                $demande = new Demande_Reservation();
                 $demande->setMessage($message);
                 $demande->setDate_debut($date_debut);
                 $demande->setDate_fin($date_fin);

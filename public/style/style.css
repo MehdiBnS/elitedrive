@@ -47,7 +47,7 @@ header {
     background-color: black;
     display: flex;
     align-items: center;
-    height: 250px;
+    height: 150px;
     width: 100%;
     color: white;
 }
@@ -82,10 +82,9 @@ img {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 10px 110px;
+    padding: 10px 50px;
     width: 100%;
     gap: 140px;
-    font-size: 20px;
 }
 
 .lienMenu {
@@ -164,7 +163,7 @@ img {
 .sous-menu {
     display: none;
     position: absolute;
-    top: 35px;
+    top: 25px;
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
     list-style-type: none;
@@ -943,12 +942,19 @@ textarea.form-input-contact {
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    min-width: 300px;
+    position: absolute;
+    z-index: 999;
     /* Ombre portée pour un effet 3D */
 }
 
 #container-filter.active {
     display: block;
 
+}
+
+#container-filter.active #car-section {
+    box-sizing: border-box;
 }
 
 #search-form {
@@ -968,9 +974,7 @@ textarea.form-input-contact {
     color: black;
 }
 
-#search-form button {
-    margin-top: 100px;
-}
+
 
 .filter-label {
     font-size: 16px;
@@ -1203,6 +1207,7 @@ textarea.form-input-contact {
     text-decoration: none;
     font-weight: 500;
     font-size: 15px;
+    text-align: center;
 }
 
 #nav-car a:hover {
@@ -2151,8 +2156,8 @@ textarea.form-input-contact {
     color: #333;
     border: 1px solid #ddd;
     width: 100%;
-    max-width: 1500px;
-    min-width: 1500px;
+    max-width: 1300px;
+    min-width: 1000px;
     border-radius: 12px;
     text-align: left;
     max-height: 640px;

@@ -34,7 +34,7 @@ class AvisController extends Controller
             $note = filter_var($inputData['rate'], FILTER_VALIDATE_INT);
             $commentaire = htmlspecialchars(trim($inputData['comment'] ?? ''), ENT_NOQUOTES, 'UTF-8');
 
-            if (!$id_vehicule || !$note || $note < 1 || $note > 5 || empty($commentaire)) {
+            if (!$id_vehicule || !$note || $note < 1 || $note > 5) {
                 echo json_encode(['success' => false, 'message' => 'Note ou commentaire invalide.']);
                 return;
             }
@@ -119,8 +119,8 @@ class AvisController extends Controller
             $note = filter_input(INPUT_POST, 'rate', FILTER_VALIDATE_INT);
             $commentaire = htmlspecialchars(trim($_POST['comment'] ?? ''), ENT_NOQUOTES, 'UTF-8');
 
-            if (!$note || $note < 1 || $note > 5 || empty($commentaire)) {
-                $_SESSION['message'] = "La note est obligatoire et doit être entre 1 et 5. Le commentaire ne peut pas être vide.";
+            if (!$note || $note < 1 || $note > 5 ) {
+                $_SESSION['message'] = "La note est obligatoire et doit être entre 1 et 5.";
                 header('Location: index.php?controller=Vehicule&action=showVehicule&id=' . $id_vehicule);
                 exit();
             }
