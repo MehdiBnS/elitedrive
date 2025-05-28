@@ -139,7 +139,16 @@ class UtilisateurController extends Controller
             $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
             $mot_de_passe = trim($_POST['password']);
             $utilisateurModel = new UtilisateurModel();
-            $utilisateur = $utilisateurModel->connect($email, $mot_de_passe);
+            $utilisateurData = $utilisateurModel->displayByEmail($email);
+
+            if ($utilisateurData && password_verify($mot_de_passe, $utilisateurData->mot_de_passe)) {
+                $utilisateur = $utilisateurModel->connect($email, $mot_de_passe);
+            } else {
+                $_SESSION['message'] = "Identifiants ou mot de passe incorrects.";
+                header('Location: index.php?controller=Utilisateur&action=connectForm');
+                exit;
+            }
+
             if ($utilisateur) {
                 session_regenerate_id(true);
                 $_SESSION['id_utilisateur'] = $utilisateur->id_utilisateur;
@@ -316,14 +325,14 @@ class UtilisateurController extends Controller
             exit();
         }
 
-        if (intval($_GET['id_utilisateur']) === intval($_SESSION['id_utilisateur'])){
+        if (intval($_GET['id_utilisateur']) === intval($_SESSION['id_utilisateur'])) {
             $id_utilisateur = intval($_GET['id_utilisateur']);
             $utilisateurModel = new UtilisateurModel();
 
             $demandeModel = new Demande_ReservationModel();
             $demandeModel->deleteByIdUser($id_utilisateur);
 
-            
+
             if ($utilisateurModel->delete($id_utilisateur)) {
                 $_SESSION['message'] = "Nous espérons vous revoir bientôt !";
                 session_unset();

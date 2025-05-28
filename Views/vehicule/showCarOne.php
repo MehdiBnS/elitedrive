@@ -68,6 +68,14 @@
                     </tr>
                 </tbody>
             </table>
+            <div id="vehicule-prices">
+                <h2>Tarifs :</h2>
+                <p>Prix KM : <span><?= htmlspecialchars($vehicule->prix_km) ?> €</span></p>
+                <p>Prix Jour : <span><?= htmlspecialchars($vehicule->prix_jour) ?> €</span></p>
+                <p>Prix Semaine : <span><?= htmlspecialchars($vehicule->prix_semaine) ?> €</span></p>
+                <p>Prix Mois : <span><?= htmlspecialchars($vehicule->prix_mois) ?> €</span></p>
+
+            </div>
         </div>
     </div>
 

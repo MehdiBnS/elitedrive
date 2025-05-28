@@ -30,6 +30,17 @@ class UtilisateurModel extends DbConnect
             die("Erreur SQL : " . $e->getMessage());
         }
     }
+
+    public function displayByEmail($email) {
+        try {
+            $this->request = $this->connection->prepare("SELECT * FROM utilisateur WHERE email = :email");
+            $this->request->bindValue(':email', $email);
+            $this->request->execute();
+            return $this->request->fetch();
+        } catch (Exception $e) {
+            die("Erreur SQL : " . $e->getMessage());
+        }
+    }
     
     public function create(Utilisateur $utilisateur)
     {
@@ -71,13 +82,7 @@ class UtilisateurModel extends DbConnect
             $this->request = $this->connection->prepare("SELECT * FROM utilisateur WHERE email = :email");
             $this->request->bindValue(':email', $email, PDO::PARAM_STR);
             $this->request->execute();
-            $utilisateurData = $this->request->fetch();
-
-            if ($utilisateurData && password_verify($mot_de_passe, $utilisateurData->mot_de_passe)) {
-                return $utilisateurData;
-            } else {
-                return false;
-            }
+            return $this->request->fetch();
         } catch (Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }

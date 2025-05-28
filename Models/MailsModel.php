@@ -13,15 +13,15 @@ class MailsModel
     {
         $this->mail = new PHPMailer(true);
 
-        $this->mail->isSMTP();
+        // $this->mail->isSMTP();
         $this->mail->CharSet = 'UTF-8';
         $this->mail->Encoding = 'base64';
-        $this->mail->Host       = 'sandbox.smtp.mailtrap.io';
-        $this->mail->SMTPAuth   = true;
-        $this->mail->Username   = '6cbe9cc11fd5c1';
-        $this->mail->Password   = 'b70fba23f3fc98';
-        $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $this->mail->Port       = 465;
+        //   $this->mail->Host       = 'sandbox.smtp.mailtrap.io';
+        //  $this->mail->SMTPAuth   = true;
+        //  $this->mail->Username   = '6cbe9cc11fd5c1';
+        //  $this->mail->Password   = 'b70fba23f3fc98';
+        //  $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        // $this->mail->Port       = 465;
 
         $this->mail->setFrom('no-reply@elitedrive.fr', 'EliteDrive');
         $this->mail->isHTML(true);

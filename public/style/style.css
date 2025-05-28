@@ -1353,6 +1353,10 @@ textarea.form-input-contact {
     color: #2c2c2c;
 }
 
+#vehicule-prices {
+    display: none;
+}
+
 .avis-section {
     background-color: rgba(16, 16, 16, 0.85);
     padding: 20px;

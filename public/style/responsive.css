@@ -71,7 +71,8 @@
         display: block;
         position: absolute;
         top: 200px;
-        left: 15%;
+        left: 0%;
+        right: 0%;
         transform: translateX(0);
         max-width: 100%;
         height: auto;
@@ -131,7 +132,7 @@
         text-align: center;
         gap: 30px;
         padding: 30px;
-        width: 93%;
+        
 
     }
 
@@ -153,7 +154,7 @@
 
     #container-decor {
         height: auto;
-        width: 600px;
+        width: 23em;
 
     }
 
@@ -222,8 +223,7 @@
     /* contactAction*/
 
     #wrapper-contact {
-        width: 85%;
-        margin: 0 auto;
+        width: 70%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -251,7 +251,7 @@
     }
 
     #wrapper-contact .form-container {
-        width: 800px;
+        width: 200px;
         background-color: #d9d9d9;
         box-shadow: none;
         margin-bottom: 30px;
@@ -317,8 +317,13 @@
 
     #car-list {
         width: 85%;
-        margin-left: 90px;
+        margin-left: 40px;
 
+    }
+
+    #filter-menu {
+        height: 50px;
+        width: 50px;
     }
 
     #nav-car a {
@@ -328,7 +333,6 @@
     #container-filter {
         position: fixed;
         z-index: 9999;
-        width: 80%;
         max-height: auto;
         top: 100px;
         overflow-y: auto;
@@ -355,7 +359,7 @@
 
     .liste-car {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(1, 1fr);
 
     }
 
@@ -385,6 +389,19 @@
 
     .avis-item {
         width: 80%;
+    }
+    .vehicule-one-prices {
+        display: none;
+    }
+    #vehicule-prices {
+        display: flex;
+        flex-direction: column;
+        color: white;
+    }
+    #vehicule-prices h2 {
+        font-size: 20px;
+        font-weight: 600;
+        color: darkgoldenrod;
     }
 
     /* createForm (demande de reservation) */
@@ -451,7 +468,6 @@
 
     .accordions-container {
         width: 100%;
-        padding: 10px;
 
     }
 
@@ -463,8 +479,9 @@
 
     .accordion-header {
         width: 100%;
-        padding: 10px;
+        padding: 0px;
         gap: 10px;
+        font-size: 15px;
     }
 
     .accordion-item {
@@ -477,6 +494,10 @@
         padding: 40px;
 
     }
+
+    #action-profile-right {
+    gap: 0px;
+}
 
     /* connect / createAccount */
     #togglePassword {

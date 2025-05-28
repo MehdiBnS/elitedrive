@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
 
-        // Set default icon
         togglePassword.innerHTML = eyeIcon;
     } else if (togglePassword && passwordInput2) {
         togglePassword.addEventListener("click", function () {
@@ -34,8 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
             passwordInput2.setAttribute("type", isPassword ? "text" : "password");
             togglePassword.innerHTML = isPassword ? eyeSlashIcon : eyeIcon;
         });
-
-        // Set default icon
         togglePassword.innerHTML = eyeIcon;
 
     }})
